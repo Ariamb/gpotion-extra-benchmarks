@@ -60,15 +60,15 @@ a1 = GPotion.new_gmatrex(a)
 b1 = GPotion.new_gmatrex(b)
 c1 = GPotion.new_gmatrex(c)
 
-GPotion.spawn(kernel,{numberOfBlocks,1,1},{threadsPerBlock,1,1},[a1,b1,c1])
+GPotion.spawn(kernel,{numberOfBlocks,1,1},{threadsPerBlock,1,1},[a1,b1])
 
 GPotion.synchronize()
 
-result = GPotion.get_gmatrex(c1)
+#result = GPotion.get_gmatrex(c1)
 
 #next = System.monotonic_time()
 #IO.puts "time gpu #{System.convert_time_unit(next-prev,:native,:millisecond)}"
 #IO.puts "GPotion\t\t#{System.convert_time_unit(next-prev,:native,:millisecond)} "
 
-IO.inspect result
+#IO.inspect result
 #IO.puts GPU.Backend.gen_c_kernel('addVectors',4,[])
