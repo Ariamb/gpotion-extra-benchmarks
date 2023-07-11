@@ -43,7 +43,7 @@ defmodule FUNC do
   end
   def compare_array(c, d, i, n) do
     IO.puts("altered: #{c[i]} - ")
-    IO.puts("original: #{d[i]} \n")
+    #IO.puts("original: #{d[i]} \n")
     compare_array(c, d, i+1, n)
   end
 end
