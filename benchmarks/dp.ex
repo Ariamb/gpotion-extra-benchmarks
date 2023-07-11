@@ -46,7 +46,7 @@ end
 
 
 
-n = 33 * 1024 #constante de tamanho q to usando
+n = 20 #constante de tamanho q to usando
 
 
 #só pra encher vetor
