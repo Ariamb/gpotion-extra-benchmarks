@@ -23,6 +23,14 @@ defmodule DP do
     end
 
   end
+
+  def fill_array(a, b, n, n) do 
+    {a, b}
+end
+def fill_array(a, b, i, n) do
+    fill_array(Matrex.set(a, 1, i + 1, i), Matrex.set(b, 1, i + 1, i), i+1, n)
+end
+
 end
 
 
@@ -30,13 +38,6 @@ n = 33 * 1024 #constante de tamanho q to usando
 
 
 #só pra encher vetor
-def fill_array(a, b, n, n) do 
-      {a, b}
-end
-def fill_array(a, b, i, n) do
-      fill_array(Matrex.set(a, 1, i + 1, i), Matrex.set(b, 1, i + 1, i), i+1, n)
-end
-  
 
 
 a = Matrex.ones(1, n)
