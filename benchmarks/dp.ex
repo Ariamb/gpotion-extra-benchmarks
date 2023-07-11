@@ -2,7 +2,7 @@ defmodule DP do
   import GPotion
 
   gpotion dotproduct(a,b,tpb) do
-    __shared__ cached[tpb]
+    __shared__ cached[256]
     tid = threadIdx.x + blockIdx.x * blockDim.x
     cacheIndex = threadIdx.x
     temp = 0.0
