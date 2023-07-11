@@ -37,7 +37,7 @@ defmodule FUNC do
   def fill_array(a, b, i, n) do
     fill_array(Matrex.set(a, 1, i + 1, i), Matrex.set(b, 1, i + 1, i), i+1, n)
   end
-  def compare_array(_c, _d, n, n) do
+  def compare_array(_c, _d, n+1, n) do
     #IO.puts("altered: #{c[i]} -")
     #IO.puts("original: #{d[i]} \n")
   end
