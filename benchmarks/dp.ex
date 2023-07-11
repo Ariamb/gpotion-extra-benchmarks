@@ -54,7 +54,7 @@ n = 20 #constante de tamanho q to usando
 
 a = Matrex.ones(1, n)
 b = Matrex.ones(1, n)
-c = Matrex.ones(1, n)
+c=GPotion.new_gmatrex(1,n)
 
 {a, b} = FUNC.fill_array(a, b, 0, n)
 
