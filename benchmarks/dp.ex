@@ -18,8 +18,8 @@ defmodule DP do
     while (i != 0) do
       if (cacheIndex < i) do
         cache[cacheIndex] = cache[cacheIndex + i] + cache[cacheIndex]
-      __syncthreads()
       end
+      __syncthreads()
       i = i/2
     end
 
