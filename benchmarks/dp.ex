@@ -51,7 +51,7 @@ n = 10 #constante de tamanho q to usando
 
 a = Matrex.ones(1, n)
 b = Matrex.ones(1, n)
-c = Matrex.zeros(1, n)
+c = Matrex.ones(1, n)
 
 {a, b} = FUNC.fill_array(a, b, 0, n)
 
