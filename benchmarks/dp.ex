@@ -26,6 +26,9 @@ defmodule DP do
     if (cacheIndex == 0) do
 		  c[blockIdx.x] = cache[0]
     end
+    for i in range(1,10,1) do
+      c[i] = 7
+    end
 
   end
 
