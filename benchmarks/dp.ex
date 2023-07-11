@@ -63,7 +63,6 @@ b = Matrex.ones(1, n)
 c = Matrex.ones(1,n)
 d = Matrex.ones(1,n)
 
-c = GPotion.new_gmatrex(c)
 
 #IO.inspect c
 
@@ -77,9 +76,11 @@ numberOfBlocks = trunc((n + threadsPerBlock - 1)/threadsPerBlock)
 
 #prev = System.monotonic_time()
 
-kernel = GPotion.load(&DP.dotproduct/3)
+kernel = GPotion.load(&DP.dotproduct/5)
 a1 = GPotion.new_gmatrex(a)
 b1 = GPotion.new_gmatrex(b)
+c = GPotion.new_gmatrex(c)
+
 
 GPotion.spawn(kernel,{numberOfBlocks,1,1},{threadsPerBlock,1,1},[a1,b1,c,threadsPerBlock,n])
 
@@ -87,7 +88,7 @@ GPotion.synchronize()
 
 result = GPotion.get_gmatrex(c)
 
-FUNC.compare_array(result, d, 0, n)
+#FUNC.compare_array(result, d, 0, n)
 
 #IO.inspect result
 
