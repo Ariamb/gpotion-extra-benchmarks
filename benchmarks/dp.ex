@@ -64,9 +64,8 @@ c = Matrex.ones(1,n)
 d = Matrex.ones(1,n)
 
 c = GPotion.new_gmatrex(c)
-d = GPotion.new_gmatrex(d)
 
-IO.inspect c
+#IO.inspect c
 
 
 {a, b} = FUNC.fill_array(a, b, 0, n)
@@ -88,9 +87,9 @@ GPotion.synchronize()
 
 result = GPotion.get_gmatrex(c)
 
-#FUNC.compare_array(result, d, 0, n)
+FUNC.compare_array(result, d, 0, n)
 
-IO.inspect result
+#IO.inspect result
 
 #next = System.monotonic_time()
 #IO.puts "time gpu #{System.convert_time_unit(next-prev,:native,:millisecond)}"
