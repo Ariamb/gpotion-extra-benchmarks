@@ -88,7 +88,7 @@ GPotion.synchronize()
 
 result = GPotion.get_gmatrex(c)
 
-#FUNC.compare_array(result, d, 0, n)
+FUNC.compare_array(result, d, 0, n)
 
 #IO.inspect result
 
