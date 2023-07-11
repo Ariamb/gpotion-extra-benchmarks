@@ -39,7 +39,7 @@ defmodule MyKernel do
   IO.puts "time gpu #{System.convert_time_unit(next-prev,:native,:millisecond)}"
   
   result = GPotion.get_gmatrex(ref3)
-  #IO.inspect result
+  IO.inspect result
   
   
   prev = System.monotonic_time()
