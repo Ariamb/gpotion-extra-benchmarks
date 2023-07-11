@@ -50,7 +50,8 @@ n = 20 #constante de tamanho q to usando
 
 a = Matrex.ones(1, n)
 b = Matrex.ones(1, n)
-c=GPotion.new_gmatrex(1,n)
+
+c = GPotion.new_gmatrex(1,n)
 
 {a, b} = FUNC.fill_array(a, b, 0, n)
 
@@ -66,7 +67,7 @@ a1 = GPotion.new_gmatrex(a)
 b1 = GPotion.new_gmatrex(b)
 c1 = GPotion.new_gmatrex(c)
 
-GPotion.spawn(kernel,{numberOfBlocks,1,1},{threadsPerBlock,1,1},[a1,b1,c1,threadsPerBlock,n])
+GPotion.spawn(kernel,{numberOfBlocks,1,1},{threadsPerBlock,1,1},[a1,b1,c,threadsPerBlock,n])
 
 GPotion.synchronize()
 
