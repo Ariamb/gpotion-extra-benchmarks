@@ -1,7 +1,7 @@
 defmodule DP do
   import GPotion
 
-  gpotion dotproduct(a,b,c) do
+  gpotion dotproduct(a,b) do
 
     tid = threadIdx.x + blockIdx.x * blockDim.x
     cacheIndex = threadIdx.x
