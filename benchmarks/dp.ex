@@ -23,9 +23,9 @@ defmodule DP do
       i = i/2
     end
 
-    if (cacheIndex == 0) do
-		  c[blockIdx.x] = cache[0]
-    end
+    #if (cacheIndex == 0) do
+		#  c[blockIdx.x] = cache[0]
+    #end
     for i in range(0,10,1) do
       c[i] = 5
     end
