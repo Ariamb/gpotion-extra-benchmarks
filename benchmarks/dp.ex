@@ -2,6 +2,10 @@ defmodule DP do
   import GPotion
 
   gpotion dotproduct(a, b, c, tpb, n) do
+    a[0] = a[0] + 0
+    b[0] = b[0] + 0
+    tpb = tpb + 0
+    n = n + 0
     #__shared__ cache[tpb]
     #tid = threadIdx.x + blockIdx.x * blockDim.x
     #cacheIndex = threadIdx.x
