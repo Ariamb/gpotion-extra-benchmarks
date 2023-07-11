@@ -42,7 +42,7 @@ end
 
 
 
-n = 20 #constante de tamanho q to usando
+n = 10 #constante de tamanho q to usando
 
 
 #só pra encher vetor
