@@ -80,7 +80,7 @@ d = Matrex.ones(1,n)
 {a, b} = FUNC.fill_array(a, b, 0, n)
 
 
-threadsPerBlock = 256;
+threadsPerBlock = 128;
 numberOfBlocks = trunc((n + threadsPerBlock - 1)/threadsPerBlock)
 
 
