@@ -65,7 +65,6 @@ numberOfBlocks = trunc((n + threadsPerBlock - 1)/threadsPerBlock)
 kernel = GPotion.load(&DP.dotproduct/3)
 a1 = GPotion.new_gmatrex(a)
 b1 = GPotion.new_gmatrex(b)
-c1 = GPotion.new_gmatrex(c)
 
 GPotion.spawn(kernel,{numberOfBlocks,1,1},{threadsPerBlock,1,1},[a1,b1,c,threadsPerBlock,n])
 
