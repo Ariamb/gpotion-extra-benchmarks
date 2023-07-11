@@ -63,6 +63,9 @@ b = Matrex.ones(1, n)
 c = GPotion.ones(1,n)
 d = GPotion.ones(1,n)
 
+c = GPotion.new_gmatrex(c)
+d = GPotion.new_gmatrex(d)
+
 IO.inspect c
 
 
