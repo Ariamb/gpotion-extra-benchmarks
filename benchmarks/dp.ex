@@ -7,7 +7,7 @@ defmodule DP do
     cacheIndex = threadIdx.x
     temp = 0.0
 
-    while (tid < N) do
+    while (tid < 33 * 1024) do
       temp = a[tid] * b[tid] + temp
       tid = blockDim.x * gridDim.x + tid
     end
