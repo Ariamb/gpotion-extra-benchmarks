@@ -63,7 +63,7 @@ GPotion.spawn(kernel,{numberOfBlocks,1,1},{threadsPerBlock,1,1},[a1,b1,c1])
 
 GPotion.synchronize()
 
-_result = GPotion.get_gmatrex(c1)
+result = GPotion.get_gmatrex(c1)
 
 #next = System.monotonic_time()
 #IO.puts "time gpu #{System.convert_time_unit(next-prev,:native,:millisecond)}"
