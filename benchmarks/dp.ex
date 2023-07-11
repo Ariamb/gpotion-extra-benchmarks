@@ -25,13 +25,17 @@ defmodule DP do
 
   end
 
-  def fill_array(a, b, n, n) do 
-    {a, b}
-end
-def fill_array(a, b, i, n) do
-    fill_array(Matrex.set(a, 1, i + 1, i), Matrex.set(b, 1, i + 1, i), i+1, n)
 end
 
+defmodule FUNC do
+  def fill_array(a, b, n, n) do 
+    {a, b}
+  end
+  def fill_array(a, b, i, n) do
+    fill_array(Matrex.set(a, 1, i + 1, i), Matrex.set(b, 1, i + 1, i), i+1, n)
+  end
+end
+  
 end
 
 
@@ -44,9 +48,9 @@ n = 33 * 1024 #constante de tamanho q to usando
 
 a = Matrex.ones(1, n)
 b = Matrex.ones(1, n)
-c = Matrex.ones(1, n)
 
-{a, b} = DP.fill_array(a, b, 0, n)
+
+{a, b} = FUNC.fill_array(a, b, 0, n)
 
 
 threadsPerBlock = 256;
@@ -55,10 +59,10 @@ numberOfBlocks = trunc((n + threadsPerBlock - 1)/threadsPerBlock)
 
 #prev = System.monotonic_time()
 
-kernel = GPotion.load(&DP.dotproduct/3)
+kernel = GPotion.load(&DP.dotproduct/2)
 a1 = GPotion.new_gmatrex(a)
 b1 = GPotion.new_gmatrex(b)
-c1 = GPotion.new_gmatrex(c)
+
 
 GPotion.spawn(kernel,{numberOfBlocks,1,1},{threadsPerBlock,1,1},[a1,b1])
 
