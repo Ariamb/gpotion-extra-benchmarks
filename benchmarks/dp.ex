@@ -60,8 +60,8 @@ n = 10 #constante de tamanho q to usando
 a = Matrex.ones(1, n)
 b = Matrex.ones(1, n)
 
-c = GPotion.new_gmatrex(1,n)
-d = GPotion.new_gmatrex(1,n)
+c = GPotion.ones(1,n)
+d = GPotion.ones(1,n)
 
 IO.inspect c
 
