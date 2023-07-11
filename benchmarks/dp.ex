@@ -39,11 +39,11 @@ defmodule FUNC do
   end
   def compare_array(c, d, n, n) do
     IO.puts("altered: #{c[i]} -")
-    IO.puts("original: #{c[i]} \n")
+    IO.puts("original: #{d[i]} \n")
   end
   def compare_array(c, d, i, n) do
     IO.puts("altered: #{c[i]} - ")
-    IO.puts("original: #{c[i]} \n")
+    IO.puts("original: #{d[i]} \n")
     compare_array(c, d, i+1, n)
   end
 end
@@ -84,6 +84,8 @@ GPotion.spawn(kernel,{numberOfBlocks,1,1},{threadsPerBlock,1,1},[a1,b1,c,threads
 GPotion.synchronize()
 
 result = GPotion.get_gmatrex(c)
+
+compare_array(result, d, 0, n)
 
 IO.inspect result
 
