@@ -27,14 +27,14 @@ defmodule DP do
 
 end
 
-defmodule FUNC do
-  def fill_array(a, b, n, n) do 
-    {a, b}
-  end
-  def fill_array(a, b, i, n) do
-    fill_array(Matrex.set(a, 1, i + 1, i), Matrex.set(b, 1, i + 1, i), i+1, n)
-  end
-end
+#defmodule FUNC do
+#  def fill_array(a, b, n, n) do 
+#    {a, b}
+#  end
+#  def fill_array(a, b, i, n) do
+#    fill_array(Matrex.set(a, 1, i + 1, i), Matrex.set(b, 1, i + 1, i), i+1, n)
+#  end
+#end
   
 
 
@@ -49,7 +49,7 @@ a = Matrex.ones(1, n)
 b = Matrex.ones(1, n)
 
 
-{a, b} = FUNC.fill_array(a, b, 0, n)
+#{a, b} = FUNC.fill_array(a, b, 0, n)
 
 
 threadsPerBlock = 256;
