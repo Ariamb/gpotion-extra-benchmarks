@@ -7,7 +7,7 @@ defmodule DP do
     cacheIndex = threadIdx.x
     temp = 0.0
 
-    while (tid < 1000) do
+    while (tid < 10) do
       temp = a[tid] * b[tid] + temp
       tid = blockDim.x * gridDim.x + tid
     end
@@ -39,7 +39,7 @@ end
 
 
 
-n = 1000 #constante de tamanho q to usando
+n = 10 #constante de tamanho q to usando
 
 
 #só pra encher vetor
