@@ -1,13 +1,13 @@
 defmodule DP do
   import GPotion
 
-  gpotion dotproduct(a,b, tpb) do
+  gpotion dotproduct(a, b, c, tpb, n) do
     __shared__ cache[tpb]
     tid = threadIdx.x + blockIdx.x * blockDim.x
     cacheIndex = threadIdx.x
     temp = 0.0
 
-    while (tid < 10) do
+    while (tid < n) do
       temp = a[tid] * b[tid] + temp
       tid = blockDim.x * gridDim.x + tid
     end
@@ -21,6 +21,10 @@ defmodule DP do
       __syncthreads()
       end
       i = i/2
+    end
+
+    if (cacheIndex == 0) do
+		  c[blockIdx.x] = cache[0]
     end
 
   end
@@ -47,7 +51,7 @@ n = 10 #constante de tamanho q to usando
 
 a = Matrex.ones(1, n)
 b = Matrex.ones(1, n)
-
+c = Matrex.zeros(1, n)
 
 #{a, b} = FUNC.fill_array(a, b, 0, n)
 
@@ -61,17 +65,20 @@ numberOfBlocks = trunc((n + threadsPerBlock - 1)/threadsPerBlock)
 kernel = GPotion.load(&DP.dotproduct/3)
 a1 = GPotion.new_gmatrex(a)
 b1 = GPotion.new_gmatrex(b)
+c1 = GPotion.new_gmatrex(c)
 tpb = threadsPerBlock
 
-GPotion.spawn(kernel,{numberOfBlocks,1,1},{threadsPerBlock,1,1},[a1,b1,tpb])
+GPotion.spawn(kernel,{numberOfBlocks,1,1},{threadsPerBlock,1,1},[a1,b1,c1,threadsPerBlock,n])
 
 GPotion.synchronize()
 
-#result = GPotion.get_gmatrex(c1)
+result = GPotion.get_gmatrex(c1)
+
+IO.inspect result
 
 #next = System.monotonic_time()
 #IO.puts "time gpu #{System.convert_time_unit(next-prev,:native,:millisecond)}"
 #IO.puts "GPotion\t\t#{System.convert_time_unit(next-prev,:native,:millisecond)} "
 
-#IO.inspect result
+
 #IO.puts GPU.Backend.gen_c_kernel('addVectors',4,[])
