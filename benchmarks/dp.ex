@@ -33,6 +33,7 @@ end
 
 end
 
+import DP
 
 n = 33 * 1024 #constante de tamanho q to usando
 
