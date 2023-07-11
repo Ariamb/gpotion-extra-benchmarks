@@ -13,7 +13,8 @@ defmodule DP do
     end
     cache[cacheIndex] = temp
     __syncthreads()
-
+    
+    i = blockDim.x/2
     while (i != 0) do
       if (cacheIndex < i) do
         cache[cacheIndex] = cache[cacheIndex + i] + cache[cacheIndex]
