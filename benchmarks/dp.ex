@@ -52,7 +52,7 @@ threadsPerBlock = 256;
 numberOfBlocks = trunc((n + threadsPerBlock - 1)/threadsPerBlock)
 
 
-prev = System.monotonic_time()
+#prev = System.monotonic_time()
 
 kernel = GPotion.load(&DP.dotproduct/3)
 a1 = GPotion.new_gmatrex(a)
@@ -65,9 +65,9 @@ GPotion.synchronize()
 
 _result = GPotion.get_gmatrex(c1)
 
-next = System.monotonic_time()
+#next = System.monotonic_time()
 #IO.puts "time gpu #{System.convert_time_unit(next-prev,:native,:millisecond)}"
-IO.puts "GPotion\t#{m}\t#{System.convert_time_unit(next-prev,:native,:millisecond)} "
+#IO.puts "GPotion\t\t#{System.convert_time_unit(next-prev,:native,:millisecond)} "
 
 IO.inspect result
 #IO.puts GPU.Backend.gen_c_kernel('addVectors',4,[])
