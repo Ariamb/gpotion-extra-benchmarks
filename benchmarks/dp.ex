@@ -37,6 +37,15 @@ defmodule FUNC do
   def fill_array(a, b, i, n) do
     fill_array(Matrex.set(a, 1, i + 1, i), Matrex.set(b, 1, i + 1, i), i+1, n)
   end
+  def compare_array(c, d, n, n) do
+    IO.puts("altered: #{c[i]} -")
+    IO.puts("original: #{c[i]} \n")
+  end
+  def compare_array(c, d, i, n) do
+    IO.puts("altered: #{c[i]} - ")
+    IO.puts("original: #{c[i]} \n")
+    compare_array(c, d, i+1, n)
+  end
 end
   
 
@@ -52,6 +61,7 @@ a = Matrex.ones(1, n)
 b = Matrex.ones(1, n)
 
 c = GPotion.new_gmatrex(1,n)
+d = GPotion.new_gmatrex(1,n)
 
 IO.inspect c
 
