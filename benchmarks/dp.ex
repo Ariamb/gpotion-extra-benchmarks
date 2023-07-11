@@ -1,8 +1,8 @@
 defmodule DP do
   import GPotion
 
-  gpotion dotproduct(a,b) do
-    __shared__ cache[256]
+  gpotion dotproduct(a,b, tpb) do
+    __shared__ cache[tpb]
     tid = threadIdx.x + blockIdx.x * blockDim.x
     cacheIndex = threadIdx.x
     temp = 0.0
@@ -58,12 +58,12 @@ numberOfBlocks = trunc((n + threadsPerBlock - 1)/threadsPerBlock)
 
 #prev = System.monotonic_time()
 
-kernel = GPotion.load(&DP.dotproduct/2)
+kernel = GPotion.load(&DP.dotproduct/3)
 a1 = GPotion.new_gmatrex(a)
 b1 = GPotion.new_gmatrex(b)
 tpb = threadsPerBlock
 
-GPotion.spawn(kernel,{numberOfBlocks,1,1},{threadsPerBlock,1,1},[a1,b1])
+GPotion.spawn(kernel,{numberOfBlocks,1,1},{threadsPerBlock,1,1},[a1,b1,tpb])
 
 GPotion.synchronize()
 
