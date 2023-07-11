@@ -33,7 +33,7 @@ end
 
 end
 
-import DP
+
 
 n = 33 * 1024 #constante de tamanho q to usando
 
@@ -45,7 +45,7 @@ a = Matrex.ones(1, n)
 b = Matrex.ones(1, n)
 c = Matrex.ones(1, n)
 
-{a, b} = fill_array(a, b, 0, n)
+{a, b} = DP.fill_array(a, b, 0, n)
 
 
 threadsPerBlock = 256;
