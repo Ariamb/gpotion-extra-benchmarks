@@ -2,10 +2,7 @@ defmodule DP do
   import GPotion
 
   gpotion dotproduct(a, b, c, tpb, n) do
-    a[0] = a[0] + 0
-    b[0] = b[0] + 0
     tpb = tpb + 0
-    n = n + 0
     #__shared__ cache[tpb]
     #tid = threadIdx.x + blockIdx.x * blockDim.x
     #cacheIndex = threadIdx.x
@@ -33,7 +30,7 @@ defmodule DP do
     index = threadIdx.x + blockIdx.x * blockDim.x;
     stride = blockDim.x * gridDim.x;
     for i in range(index,n,stride) do
-           c[i] = i + i
+           c[i] = a[i] + b[i]
     end
   end
 
