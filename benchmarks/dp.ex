@@ -30,8 +30,10 @@ defmodule DP do
     #if (cacheIndex == 0) do
 		#  c[blockIdx.x] = cache[0]
     #end
-    for i in range(0,10,1) do
-      c[i] = 5
+    index = threadIdx.x + blockIdx.x * blockDim.x;
+    stride = blockDim.x * gridDim.x;
+    for i in range(index,n,stride) do
+           c[i] = i + i
     end
   end
 
