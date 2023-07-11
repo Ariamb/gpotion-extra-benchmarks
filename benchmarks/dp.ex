@@ -71,7 +71,7 @@ GPotion.spawn(kernel,{numberOfBlocks,1,1},{threadsPerBlock,1,1},[a1,b1,c,threads
 
 GPotion.synchronize()
 
-result = GPotion.get_gmatrex(c1)
+result = GPotion.get_gmatrex(c)
 
 IO.inspect result
 
