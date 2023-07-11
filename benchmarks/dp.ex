@@ -42,7 +42,8 @@ defmodule FUNC do
     #IO.puts("original: #{d[i]} \n")
   end
   def compare_array(c, d, i, n) do
-    IO.puts("altered: #{c[i]} - ")
+    IO.puts("altered: #{Matrex.at(c, 1, i)}  ")
+    IO.puts("altered: #{Matrex.at(d, 1, i)}  ")
     #IO.puts("original: #{d[i]} \n")
     compare_array(c, d, i+1, n)
   end
