@@ -1,5 +1,2 @@
 _build/
 deps/
-benchmarks/cuda/
-benchmarks/typed_versions/
-compile.sh
