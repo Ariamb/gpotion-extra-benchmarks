@@ -1,28 +1,28 @@
 defmodule DP do
   import GPotion
 
+  gpotion dotproduct(a,b,c) do
 
-gpotion dotproduct(a,b,c) do
+    tid = threadIdx.x + blockIdx.x * blockDim.x
+    cacheIndex = threadIdx.x
+    temp = 0.0
 
-	tid = threadIdx.x + blockIdx.x * blockDim.x
-	cacheIndex = threadIdx.x
-  temp = 0.0
-
-  while (tid < N) do
-    temp = a[tid] * b[tid] + temp
-		tid = blockDim.x * gridDim.x + tid
-  end
-  cache[cacheIndex] = temp
-  __syncthreads()
-
-  while (i != 0) do
-		if (cacheIndex < i) do
-			cache[cacheIndex] = cache[cacheIndex + i] + cache[cacheIndex]
-		__syncthreads()
+    while (tid < N) do
+      temp = a[tid] * b[tid] + temp
+      tid = blockDim.x * gridDim.x + tid
     end
-		i = i/2
-	end
+    cache[cacheIndex] = temp
+    __syncthreads()
 
+    while (i != 0) do
+      if (cacheIndex < i) do
+        cache[cacheIndex] = cache[cacheIndex + i] + cache[cacheIndex]
+      __syncthreads()
+      end
+      i = i/2
+    end
+
+  end
 end
 
 
