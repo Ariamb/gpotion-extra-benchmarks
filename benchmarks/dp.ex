@@ -78,7 +78,7 @@ d = Matrex.ones(1,n)
 
 
 threadsPerBlock = 128;
-numberOfBlocks = trunc((n + threadsPerBlock - 1)/threadsPerBlock)
+numberOfBlocks = div(n + threadsPerBlock - 1, threadsPerBlock)
 
 
 #prev = System.monotonic_time()
