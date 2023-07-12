@@ -33,7 +33,7 @@ gpotion add_vectors(ref4,ref3, a, b, n, tpb) do
 
   index = threadIdx.x + blockIdx.x * blockDim.x;
   for j in range(index,n,stride) do
-    ref3[i] = a[i] * b[i]
+    ref3[j] = a[j] * b[j]
   end
   __syncthreads()
 end
