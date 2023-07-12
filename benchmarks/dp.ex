@@ -18,6 +18,7 @@ list = [Enum.to_list(1..n)]
 
 vet1 = Matrex.new(list)
 vet2 = Matrex.new(list)
+vet3 = Matrex.new(list)
 
 
 kernel=GPotion.load(&DP.add_vectors/5)
@@ -30,7 +31,7 @@ prev = System.monotonic_time()
 
 ref1=GPotion.new_gmatrex(vet1)
 ref2=GPotion.new_gmatrex(vet2)
-ref3=GPotion.new_gmatrex(1,n)
+ref3=GPotion.new_gmatrex(vet3)
 
 GPotion.spawn(kernel,{numberOfBlocks,1,1},{threadsPerBlock,1,1},[ref3,ref1,ref2,n])
 GPotion.synchronize()
