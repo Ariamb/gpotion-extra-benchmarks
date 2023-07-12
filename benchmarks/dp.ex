@@ -6,38 +6,35 @@ defmodule DP do
 
   __shared__ cache[256]
 
-  #tid = threadIdx.x + blockIdx.x * blockDim.x;
-  
-
+  tid = threadIdx.x + blockIdx.x * blockDim.x;
   cacheIndex = threadIdx.x
   temp = 0.0
   
-  #while (tid < n) do
-  #  temp = a[tid] * b[tid] + temp
-  #  tid = blockDim.x * gridDim.x + tid
-  #end
+  while (tid < n) do
+    temp = a[tid] * b[tid] + temp
+    tid = blockDim.x * gridDim.x + tid
+  end
       
-  #cache[cacheIndex] = temp
-  #__syncthreads()
+  cache[cacheIndex] = temp
+  __syncthreads()
       
-  #i = blockDim.x/2
-  #while (i != 0) do
-  #  if (cacheIndex < i) do
-  #    cache[cacheIndex] = cache[cacheIndex + i] + cache[cacheIndex]
-  #  end
-  #  __syncthreads()
-  #  i = i/2
-  #end
+  i = blockDim.x/2
+  while (i != 0) do
+    if (cacheIndex < i) do
+      cache[cacheIndex] = cache[cacheIndex + i] + cache[cacheIndex]
+    end
+    __syncthreads()
+    i = i/2
+  end
   
-  #if (cacheIndex == 0) do
-  #  ref4[blockIdx.x] = cache[0]
-  #end
-  #ref4[0] = ref4[0]
-  #tpb = tpb+ 0
+  if (cacheIndex == 0) do
+    ref4[blockIdx.x] = cache[0]
+  end
+  
   index = threadIdx.x + blockIdx.x * blockDim.x;
   stride = blockDim.x * gridDim.x;
   for j in range(index,n,stride) do
-    ref3[j] = a[j] * b[j] + ref4[j] * 0
+    ref3[j] = a[j] * b[j] #+ ref4[j] * 0
   end
   __syncthreads()
 end
