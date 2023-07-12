@@ -4,13 +4,13 @@ defmodule DP do
 #gpotion add_vectors(ref4,ref3, a, b, n, tpb) do
   gpotion add_vectors(ref3, a, b, n, tpb) do
   tpb = tpb + 0
-    #__shared__ cache[tpb]
+  __shared__ cache[tpb]
 
   #tid = threadIdx.x + blockIdx.x * blockDim.x;
   
 
-  #cacheIndex = threadIdx.x
-  #temp = 0.0
+  cacheIndex = threadIdx.x
+  temp = 0.0
   
   #while (tid < n) do
   #  temp = a[tid] * b[tid] + temp
