@@ -67,7 +67,7 @@ GPotion.spawn(kernel,{numberOfBlocks,1,1},{threadsPerBlock,1,1},[ref3,ref4, ref1
 GPotion.synchronize()
 
 #next = System.monotonic_time()
-IO.puts "time gpu #{System.convert_time_unit(next-prev,:native,:millisecond)}"
+#IO.puts "time gpu #{System.convert_time_unit(next-prev,:native,:millisecond)}"
 
 resultreal = GPotion.get_gmatrex(ref3)
 resultfake = GPotion.get_gmatrex(ref4)
