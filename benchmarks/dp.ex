@@ -74,9 +74,9 @@ GPotion.synchronize()
 #IO.puts "time gpu #{System.convert_time_unit(next-prev,:native,:millisecond)}"
 
 resultfake = GPotion.get_gmatrex(ref3)
-#resultreal = GPotion.get_gmatrex(ref4)
-#IO.puts("rel")
-#IO.inspect resultreal
+resultreal = GPotion.get_gmatrex(ref4)
+IO.puts("rel")
+IO.inspect resultreal
 IO.puts("fake")
 IO.inspect resultfake
 
