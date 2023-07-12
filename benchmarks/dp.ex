@@ -1,7 +1,7 @@
 defmodule DP do
   import GPotion
 
-gpotion add_vectors(result1,result2, a, b, n, tpb) do
+gpotion add_vectors(ref4,ref3, a, b, n, tpb) do
   __shared__ cache[tpb]
 
   tid = threadIdx.x + blockIdx.x * blockDim.x;
@@ -28,12 +28,12 @@ gpotion add_vectors(result1,result2, a, b, n, tpb) do
   end
   
   if (cacheIndex == 0) do
-    result1[blockIdx.x] = cache[0]
+    ref4[blockIdx.x] = cache[0]
   end
 
   index = threadIdx.x + blockIdx.x * blockDim.x;
   for j in range(index,n,stride) do
-    result2[i] = a[i] * b[i]
+    ref3[i] = a[i] * b[i]
   end
 end
 end
