@@ -1,11 +1,12 @@
 defmodule DP do
   import GPotion
 
-gpotion add_vectors(ref4,ref3, a, b, n, tpb) do
-  __shared__ cache[tpb]
+#gpotion add_vectors(ref4,ref3, a, b, n, tpb) do
+  gpotion add_vectors(ref3, a, b, n) do
+  #__shared__ cache[tpb]
 
-  tid = threadIdx.x + blockIdx.x * blockDim.x;
-  stride = blockDim.x * gridDim.x;
+  #tid = threadIdx.x + blockIdx.x * blockDim.x;
+  
 
   #cacheIndex = threadIdx.x
   #temp = 0.0
@@ -30,9 +31,10 @@ gpotion add_vectors(ref4,ref3, a, b, n, tpb) do
   #if (cacheIndex == 0) do
   #  ref4[blockIdx.x] = cache[0]
   #end
-  ref4[0] = ref4[0]
-  tpb = tpb+ 0
+  #ref4[0] = ref4[0]
+  #tpb = tpb+ 0
   index = threadIdx.x + blockIdx.x * blockDim.x;
+  stride = blockDim.x * gridDim.x;
   for j in range(index,n,stride) do
     ref3[j] = a[j] * b[j]
   end
@@ -49,7 +51,7 @@ list = [Enum.to_list(1..n)]
 vet1 = Matrex.new(list)
 vet2 = Matrex.new(list)
 vet3 = Matrex.ones(1,n)
-vet4 = Matrex.ones(1,n)
+#vet4 = Matrex.ones(1,n)
 
 
 
@@ -64,19 +66,19 @@ numberOfBlocks = div(n + threadsPerBlock - 1, threadsPerBlock)
 ref1=GPotion.new_gmatrex(vet1)
 ref2=GPotion.new_gmatrex(vet2)
 ref3=GPotion.new_gmatrex(vet3)
-ref4=GPotion.new_gmatrex(vet4)
+#ref4=GPotion.new_gmatrex(vet4)
 
 tpb = 256
-GPotion.spawn(kernel,{numberOfBlocks,1,1},{threadsPerBlock,1,1},[ref4,ref3, ref1,ref2,n, tpb])
+GPotion.spawn(kernel,{numberOfBlocks,1,1},{threadsPerBlock,1,1},[ref3, ref1,ref2,n])
 GPotion.synchronize()
 
 #next = System.monotonic_time()
 #IO.puts "time gpu #{System.convert_time_unit(next-prev,:native,:millisecond)}"
 
 resultfake = GPotion.get_gmatrex(ref3)
-resultreal = GPotion.get_gmatrex(ref4)
-IO.puts("rel")
-IO.inspect resultreal
+#resultreal = GPotion.get_gmatrex(ref4)
+#IO.puts("rel")
+#IO.inspect resultreal
 IO.puts("fake")
 IO.inspect resultfake
 
