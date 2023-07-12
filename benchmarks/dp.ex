@@ -61,7 +61,7 @@ ref3=GPotion.new_gmatrex(vet3)
 ref4=GPotion.new_gmatrex(vet4)
 
 tpb = 256
-GPotion.spawn(kernel,{numberOfBlocks,1,1},{threadsPerBlock,1,1},[ref43, ref1,ref2,n])
+GPotion.spawn(kernel,{numberOfBlocks,1,1},{threadsPerBlock,1,1},[ref4, ref1,ref2,n])
 GPotion.synchronize()
 
 #next = System.monotonic_time()
