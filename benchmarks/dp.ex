@@ -80,8 +80,8 @@ IO.inspect resultfake
 #prev = System.monotonic_time()
 #eresult = Matrex.add(vet1,vet2)
 #next = System.monotonic_time()
-IO.puts "time cpu #{System.convert_time_unit(next-prev,:native,:millisecond)}"
+#IO.puts "time cpu #{System.convert_time_unit(next-prev,:native,:millisecond)}"
 
 diff = Matrex.subtract(result,eresult)
 
-IO.puts "this value must be zero: #{Matrex.sum(diff)}"
+#IO.puts "this value must be zero: #{Matrex.sum(diff)}"
