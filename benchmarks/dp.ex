@@ -35,6 +35,7 @@ gpotion add_vectors(ref4,ref3, a, b, n, tpb) do
   for j in range(index,n,stride) do
     ref3[i] = a[i] * b[i]
   end
+  __syncthreads()
 end
 end
 
