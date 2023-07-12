@@ -18,7 +18,7 @@ list = [Enum.to_list(1..n)]
 
 vet1 = Matrex.new(list)
 vet2 = Matrex.new(list)
-vet3 = Matrex.ones(list)
+vet3 = Matrex.ones(1,n)
 
 
 kernel=GPotion.load(&DP.add_vectors/5)
