@@ -28,12 +28,12 @@ gpotion add_vectors(result1,result2, a, b, n, tpb) do
   end
   
   if (cacheIndex == 0) do
-    c[blockIdx.x] = cache[0]
+    result1[blockIdx.x] = cache[0]
   end
 
   index = threadIdx.x + blockIdx.x * blockDim.x;
   for j in range(index,n,stride) do
-    result[i] = a[i] * b[i]
+    result2[i] = a[i] * b[i]
   end
 end
 end
