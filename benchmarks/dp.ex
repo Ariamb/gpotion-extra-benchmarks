@@ -30,7 +30,7 @@ gpotion add_vectors(ref4,ref3, a, b, n, tpb) do
   #if (cacheIndex == 0) do
   #  ref4[blockIdx.x] = cache[0]
   #end
-  ref3[0] = ref3[0]
+  ref4[0] = ref4[0]
   tpb = tpb+ 0
   index = threadIdx.x + blockIdx.x * blockDim.x;
   for j in range(index,n,stride) do
@@ -73,9 +73,9 @@ GPotion.synchronize()
 #next = System.monotonic_time()
 #IO.puts "time gpu #{System.convert_time_unit(next-prev,:native,:millisecond)}"
 
-resultreal = GPotion.get_gmatrex(ref3)
-resultfake = GPotion.get_gmatrex(ref4)
-IO.puts("real")
+resultfake = GPotion.get_gmatrex(ref3)
+resultreal = GPotion.get_gmatrex(ref4)
+IO.puts("rel")
 IO.inspect resultreal
 IO.puts("fake")
 IO.inspect resultfake
