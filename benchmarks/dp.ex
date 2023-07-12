@@ -2,8 +2,9 @@ defmodule DP do
   import GPotion
 
 #gpotion add_vectors(ref4,ref3, a, b, n, tpb) do
-  gpotion add_vectors(ref3, a, b, n) do
-  #__shared__ cache[tpb]
+  gpotion add_vectors(ref3, a, b, n, tpb) do
+  tpb = tpb + 0
+    #__shared__ cache[tpb]
 
   #tid = threadIdx.x + blockIdx.x * blockDim.x;
   
@@ -69,7 +70,7 @@ ref3=GPotion.new_gmatrex(vet3)
 #ref4=GPotion.new_gmatrex(vet4)
 
 tpb = 256
-GPotion.spawn(kernel,{numberOfBlocks,1,1},{threadsPerBlock,1,1},[ref3, ref1,ref2,n])
+GPotion.spawn(kernel,{numberOfBlocks,1,1},{threadsPerBlock,1,1},[ref3, ref1,ref2,n, tpb])
 GPotion.synchronize()
 
 #next = System.monotonic_time()
