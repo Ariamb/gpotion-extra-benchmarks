@@ -3,8 +3,7 @@ defmodule DP do
 
 #gpotion add_vectors(ref4,ref3, a, b, n, tpb) do
   gpotion add_vectors(ref4, ref3, a, b, n, tpb) do
-  tpb = tpb + 0
-  ref4[0] = ref[0]+0
+
   __shared__ cache[tpb]
 
   #tid = threadIdx.x + blockIdx.x * blockDim.x;
@@ -38,7 +37,7 @@ defmodule DP do
   index = threadIdx.x + blockIdx.x * blockDim.x;
   stride = blockDim.x * gridDim.x;
   for j in range(index,n,stride) do
-    ref3[j] = a[j] * b[j]
+    ref3[j] = a[j] * b[j] + ref4[j] * 0
   end
   __syncthreads()
 end
