@@ -82,6 +82,6 @@ IO.inspect resultfake
 #next = System.monotonic_time()
 #IO.puts "time cpu #{System.convert_time_unit(next-prev,:native,:millisecond)}"
 
-diff = Matrex.subtract(result,eresult)
+#diff = Matrex.subtract(result,eresult)
 
 #IO.puts "this value must be zero: #{Matrex.sum(diff)}"
