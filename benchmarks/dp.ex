@@ -2,7 +2,7 @@ defmodule DP do
   import GPotion
 
 #gpotion add_vectors(ref4,ref3, a, b, n, tpb) do
-  gpotion add_vectors(ref4, ref3, a, b, n) do
+  gpotion add_vectors(ref4, a, b, n) do
 
   __shared__ cache[256]
 
@@ -30,13 +30,7 @@ defmodule DP do
   if (cacheIndex == 0) do
     ref4[blockIdx.x] = cache[0]
   end
-  
-  index = threadIdx.x + blockIdx.x * blockDim.x;
-  stride = blockDim.x * gridDim.x;
-  for j in range(index,n,stride) do
-    ref3[j] = a[j] * b[j] #+ ref4[j] * 0
-  end
-  __syncthreads()
+
 end
 end
 
@@ -67,18 +61,18 @@ ref3=GPotion.new_gmatrex(vet3)
 ref4=GPotion.new_gmatrex(vet4)
 
 tpb = 256
-GPotion.spawn(kernel,{numberOfBlocks,1,1},{threadsPerBlock,1,1},[ref4, ref3, ref1,ref2,n])
+GPotion.spawn(kernel,{numberOfBlocks,1,1},{threadsPerBlock,1,1},[ref43, ref1,ref2,n])
 GPotion.synchronize()
 
 #next = System.monotonic_time()
 #IO.puts "time gpu #{System.convert_time_unit(next-prev,:native,:millisecond)}"
 
-resultfake = GPotion.get_gmatrex(ref3)
+#resultfake = GPotion.get_gmatrex(ref3)
 resultreal = GPotion.get_gmatrex(ref4)
 IO.puts("rel")
 IO.inspect resultreal
-IO.puts("fake")
-IO.inspect resultfake
+#IO.puts("fake")
+#IO.inspect resultfake
 
 
 #prev = System.monotonic_time()
