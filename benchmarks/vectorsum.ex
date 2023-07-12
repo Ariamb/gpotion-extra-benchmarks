@@ -2,6 +2,8 @@ defmodule MyKernel do
   import GPotion
 
 gpotion add_vectors(result, a, b, n) do
+
+  #testando se poderiam ser os comments
   index = threadIdx.x + blockIdx.x * blockDim.x;
   stride = blockDim.x * gridDim.x;
   for i in range(index,n,stride) do
