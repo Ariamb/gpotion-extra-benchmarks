@@ -5,7 +5,7 @@ gpotion add_vectors(result, a, b, n) do
   index = threadIdx.x + blockIdx.x * blockDim.x;
   stride = blockDim.x * gridDim.x;
   for i in range(index,n,stride) do
-         result[i] = a[i] + b[i]
+         result[i] = a[i] * b[i]
   end
 end
 end
