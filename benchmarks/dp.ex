@@ -1,10 +1,37 @@
 defmodule DP do
   import GPotion
 
-gpotion add_vectors(result, a, b, n) do
+gpotion add_vectors(result1,result2, a, b, n, tpb) do
+  __shared__ cache[tpb]
+
   index = threadIdx.x + blockIdx.x * blockDim.x;
   stride = blockDim.x * gridDim.x;
-  for i in range(index,n,stride) do
+
+  cacheIndex = threadIdx.x
+  temp = 0.0
+  
+  while (tid < n) do
+    temp = a[tid] * b[tid] + temp
+    tid = blockDim.x * gridDim.x + tid
+  end
+      
+  cache[cacheIndex] = temp
+  __syncthreads()
+      
+  i = blockDim.x/2
+  while (i != 0) do
+    if (cacheIndex < i) do
+      cache[cacheIndex] = cache[cacheIndex + i] + cache[cacheIndex]
+    end
+    __syncthreads()
+    i = i/2
+  end
+  
+  if (cacheIndex == 0) do
+    c[blockIdx.x] = cache[0]
+  end
+
+  for j in range(index,n,stride) do
          result[i] = a[i] * b[i]
   end
 end
@@ -19,6 +46,8 @@ list = [Enum.to_list(1..n)]
 vet1 = Matrex.new(list)
 vet2 = Matrex.new(list)
 vet3 = Matrex.ones(1,n)
+vet4 = Matrex.ones(1,n)
+
 
 
 kernel=GPotion.load(&DP.add_vectors/5)
@@ -27,25 +56,30 @@ threadsPerBlock = 128;
 numberOfBlocks = div(n + threadsPerBlock - 1, threadsPerBlock)
 
 
-prev = System.monotonic_time()
+#prev = System.monotonic_time()
 
 ref1=GPotion.new_gmatrex(vet1)
 ref2=GPotion.new_gmatrex(vet2)
 ref3=GPotion.new_gmatrex(vet3)
+ref4=GPotion.new_gmatrex(vet4)
 
-GPotion.spawn(kernel,{numberOfBlocks,1,1},{threadsPerBlock,1,1},[ref3,ref1,ref2,n])
+GPotion.spawn(kernel,{numberOfBlocks,1,1},{threadsPerBlock,1,1},[ref3,ref4, ref1,ref2,n])
 GPotion.synchronize()
 
-next = System.monotonic_time()
+#next = System.monotonic_time()
 IO.puts "time gpu #{System.convert_time_unit(next-prev,:native,:millisecond)}"
 
-result = GPotion.get_gmatrex(ref3)
-#IO.inspect result
+resultreal = GPotion.get_gmatrex(ref3)
+resultfake = GPotion.get_gmatrex(ref4)
+IO.puts("real")
+IO.inspect resultreal
+IO.puts("fake")
+IO.inspect resultfake
 
 
-prev = System.monotonic_time()
-eresult = Matrex.add(vet1,vet2)
-next = System.monotonic_time()
+#prev = System.monotonic_time()
+#eresult = Matrex.add(vet1,vet2)
+#next = System.monotonic_time()
 IO.puts "time cpu #{System.convert_time_unit(next-prev,:native,:millisecond)}"
 
 diff = Matrex.subtract(result,eresult)
