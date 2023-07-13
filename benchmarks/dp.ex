@@ -53,7 +53,7 @@ defmodule FUNC do
     compare_array(c, d, i+1, n)
   end
   def soma_array([], s) do
-    0
+    s+0
   end
   def soma_array([h|t], s) do
     soma_array(t, s+h)
@@ -96,6 +96,7 @@ GPotion.synchronize()
 #IO.puts "time gpu #{System.convert_time_unit(next-prev,:native,:millisecond)}"
 
 #resultfake = GPotion.get_gmatrex(ref3)
+FUNC.soma_array(resultreal, 0)
 resultreal = GPotion.get_gmatrex(ref3)
 IO.puts("rel")
 IO.inspect resultreal
