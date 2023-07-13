@@ -96,9 +96,10 @@ GPotion.synchronize()
 #IO.puts "time gpu #{System.convert_time_unit(next-prev,:native,:millisecond)}"
 
 #resultfake = GPotion.get_gmatrex(ref3)
-FUNC.soma_array(resultreal, 0)
+
 resultreal = GPotion.get_gmatrex(ref3)
-IO.puts("rel")
+s = FUNC.soma_array(resultreal, 0)
+IO.puts("rel, sum = #{s}")
 IO.inspect resultreal
 #IO.puts("fake")
 #IO.inspect resultfake
