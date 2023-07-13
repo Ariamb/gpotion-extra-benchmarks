@@ -61,7 +61,7 @@ defmodule FUNC do
   
 end
 
-n = 10000000
+n = 33 * 1024
 
 
 
