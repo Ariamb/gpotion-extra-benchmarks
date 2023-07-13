@@ -69,8 +69,9 @@ list = [Enum.to_list(1..n)]
 
 vet1 = Matrex.new(list)
 vet2 = Matrex.new(list)
+threadsPerBlock = 256
 
-blocksPerGrid = (256+threadsPerBlock-1) / threadsPerBlock
+blocksPerGrid = (n+threadsPerBlock-1) / threadsPerBlock
 vet3 = Matrex.ones(1,blocksPerGrid)
 
 
