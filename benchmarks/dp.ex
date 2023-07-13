@@ -71,7 +71,7 @@ vet1 = Matrex.new(list)
 vet2 = Matrex.new(list)
 threadsPerBlock = 256
 
-blocksPerGrid = (n+threadsPerBlock-1) / threadsPerBlock
+blocksPerGrid = trunc((n+threadsPerBlock-1) / threadsPerBlock)
 vet3 = Matrex.ones(1,blocksPerGrid)
 
 
