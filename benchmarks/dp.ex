@@ -98,7 +98,7 @@ GPotion.synchronize()
 #resultfake = GPotion.get_gmatrex(ref3)
 
 resultreal = GPotion.get_gmatrex(ref3)
-s = FUNC.soma_array(resultreal, 0)
+s = FUNC.soma_array(Matrex.list(resultreal), 0)
 IO.puts("rel, sum = #{s}")
 IO.inspect resultreal
 #IO.puts("fake")
