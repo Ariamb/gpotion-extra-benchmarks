@@ -100,6 +100,9 @@ GPotion.synchronize()
 resultreal = GPotion.get_gmatrex(ref3)
 s = Matrex.sum(resultreal)
 IO.puts("rel, sum = #{s}")
+
+IO.puts("matrex, sum matrex = #{Matrex.sum(Matrex.dot_nt(ref1, ref2))}")
+
 IO.inspect resultreal
 #IO.puts("fake")
 #IO.inspect resultfake
