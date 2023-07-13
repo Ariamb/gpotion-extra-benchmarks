@@ -65,7 +65,7 @@ n = 33 * 1024
 
 
 
-list = [Enum.to_list(1..n)]
+list = [Enum.to_list(0..n-1)]
 
 vet1 = Matrex.new(list)
 vet2 = Matrex.new(list)
