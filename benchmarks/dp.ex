@@ -34,6 +34,33 @@ defmodule DP do
 end
 end
 
+
+defmodule FUNC do
+  def fill_array(a, b, n, n) do 
+    {a, b}
+  end
+  def fill_array(a, b, i, n) do
+    fill_array(Matrex.set(a, 1, i + 1, i), Matrex.set(b, 1, i + 1, i), i+1, n)
+  end
+  def compare_array(_c, _d, n, n) do
+    #IO.puts("altered: #{c[i]} -")
+    #IO.puts("original: #{d[i]} \n")
+  end
+  def compare_array(c, d, i, n) do
+    IO.puts("pos: #{i};  base: #{Matrex.at(d, 1, i+1)};  altered: #{Matrex.at(c, 1, i+1)}  \n")
+    
+    #IO.puts("original: #{d[i]} \n")
+    compare_array(c, d, i+1, n)
+  end
+  def soma_array([], s) do
+    0
+  end
+  def soma_array([h|t], s) do
+    soma_array(t, s+h)
+  end
+  
+end
+
 n = 10000000
 
 
@@ -42,8 +69,9 @@ list = [Enum.to_list(1..n)]
 
 vet1 = Matrex.new(list)
 vet2 = Matrex.new(list)
-vet3 = Matrex.ones(1,n)
-vet4 = Matrex.ones(1,n)
+
+blocksPerGrid = (256+threadsPerBlock-1) / threadsPerBlock
+vet3 = Matrex.ones(1,blocksPerGrid)
 
 
 
@@ -58,9 +86,8 @@ numberOfBlocks = div(n + threadsPerBlock - 1, threadsPerBlock)
 ref1=GPotion.new_gmatrex(vet1)
 ref2=GPotion.new_gmatrex(vet2)
 ref3=GPotion.new_gmatrex(vet3)
-ref4=GPotion.new_gmatrex(vet4)
 
-tpb = 256
+
 GPotion.spawn(kernel,{numberOfBlocks,1,1},{threadsPerBlock,1,1},[ref4, ref1,ref2,n])
 GPotion.synchronize()
 
