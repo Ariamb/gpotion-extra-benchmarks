@@ -89,14 +89,14 @@ ref2=GPotion.new_gmatrex(vet2)
 ref3=GPotion.new_gmatrex(vet3)
 
 
-GPotion.spawn(kernel,{numberOfBlocks,1,1},{threadsPerBlock,1,1},[ref4, ref1,ref2,n])
+GPotion.spawn(kernel,{numberOfBlocks,1,1},{threadsPerBlock,1,1},[ref3, ref1,ref2,n])
 GPotion.synchronize()
 
 #next = System.monotonic_time()
 #IO.puts "time gpu #{System.convert_time_unit(next-prev,:native,:millisecond)}"
 
 #resultfake = GPotion.get_gmatrex(ref3)
-resultreal = GPotion.get_gmatrex(ref4)
+resultreal = GPotion.get_gmatrex(ref3)
 IO.puts("rel")
 IO.inspect resultreal
 #IO.puts("fake")
