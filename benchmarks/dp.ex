@@ -79,7 +79,7 @@ vet3 = Matrex.ones(1,blocksPerGrid)
 
 kernel=GPotion.load(&DP.dot_product/5)
 
-threadsPerBlock = 128;
+threadsPerBlock = 256;
 blocksPerGrid = div(n + threadsPerBlock - 1, threadsPerBlock)
 numberOfBlocks = blocksPerGrid
 
