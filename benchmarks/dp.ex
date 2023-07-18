@@ -2,7 +2,7 @@ defmodule DP do
   import GPotion
 
 #gpotion add_vectors(ref4,ref3, a, b, n, tpb) do
-  gpotion add_vectors(ref4, a, b, n) do
+  gpotion dot_product(ref4, a, b, n) do
 
   __shared__ cache[256]
 
@@ -76,7 +76,7 @@ vet3 = Matrex.ones(1,blocksPerGrid)
 
 
 
-kernel=GPotion.load(&DP.add_vectors/5)
+kernel=GPotion.load(&DP.dot_product/5)
 
 threadsPerBlock = 128;
 numberOfBlocks = div(n + threadsPerBlock - 1, threadsPerBlock)
