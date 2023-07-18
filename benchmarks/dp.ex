@@ -80,7 +80,7 @@ kernel=GPotion.load(&DP.dot_product/5)
 
 threadsPerBlock = 128;
 blocksPerGrid = div(n + threadsPerBlock - 1, threadsPerBlock)
-blocksPerGrid = numberOfBlocks
+numberOfBlocks = blocksPerGrid
 
 #prev = System.monotonic_time()
 
