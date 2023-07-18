@@ -79,8 +79,8 @@ vet3 = Matrex.ones(1,blocksPerGrid)
 kernel=GPotion.load(&DP.dot_product/5)
 
 threadsPerBlock = 128;
-numberOfBlocks = div(n + threadsPerBlock - 1, threadsPerBlock)
-
+blocksPerGrid = div(n + threadsPerBlock - 1, threadsPerBlock)
+blocksPerGrid = numberOfBlocks
 
 #prev = System.monotonic_time()
 
