@@ -87,7 +87,7 @@ numberOfBlocks = blocksPerGrid
 
 ref1=GPotion.new_gmatrex(vet1)
 ref2=GPotion.new_gmatrex(vet2)
-ref3=GPotion.new_gmatrex(vet3)
+ref3=GPotion.new_gmatrex(vet3)                                                                                                                                                                                                                                                                                 
 
 
 GPotion.spawn(kernel,{numberOfBlocks,1,1},{threadsPerBlock,1,1},[ref3, ref1,ref2,n])
