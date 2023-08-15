@@ -1,32 +1,57 @@
 import Random
 import Matrex
 import Bitwise
+#import GPotion
 
 Random.seed(42)
 
 
 
-defmodule Sphere do
-    defstruct r: 0, g: 0, b: 0, radius: 0, x: 0, y: 0, z: 0
-
-    def new() do
-        %Sphere{}
-    end
+defmodule RayTracer do
+  #gpotion raytracing( s, ptr, dim,spheres, inf ) do
+  gpotion raytracing(dim, spheres, image) do
+    x = threadIdx.x + blockIdx.x * blockDim.x
+    y = threadIdx.y + blockIdx.y * blockDim.y
+    offset = x + y * blockDim.x * gridDim.x
     
-    def hit(sphere, ox, oy) do
-        dx = ox - sphere.x
-        dy = oy - sphere.y
-        if (dx * dx + dy * dy) < sphere.radius * sphere.radius do
-            dz = :math.sqrt(sphere.radius * sphere.radius - dx * dx - dy * dy)
-            n = dz / :math.sqrt(sphere.radius * sphere.radius)
-            return = {n, dz + sphere.z}
-        else
-            return = {0, CPUraytracer.minusinf} #makeshift infinity in elixir, using 32 memory bits
-        end
+    ox = (x - dim/2)
+    oy = (y - dim/2)
+
+    r = 0.0
+    g = 0.0
+    b = 0.0
+
+    maxz = -999999999
+    for i in range(0, 20) do
+      n = 0.0
+      #{ #hit
+      dx = ox - sphere[i * 7 + 4]
+      dy = oy - sphere[i * 7 + 5]
+
+      if (dx * dx + dy * dy) <  sphere[i * 7 + 3] * sphere[i * 7 + 3] do
+        dzsqrd = sphere[i * 7 + 3] * sphere[i * 7 + 3] - dx * dx - dy * dy
+        dz = sqrt(dzsqrd)
+        n = dz / sqrt(sphere[i * 7 + 3] * sphere[i * 7 + 3])
+        dz = dz + sphere[i * 7 + 6] 
+      end
+      #}
+
+      if t > maxz do
+        fscale = n
+        r = sphere[i * 7 + 0] * fscale
+        g = sphere[i * 7 + 1] * fscale
+        b = sphere[i * 7 + 2] * fscale
+        maxz = t
+      end
     end
+
+    image[offset * 4 + 0] = r * 255
+    image[offset * 4 + 1] = g * 255
+    image[offset * 4 + 2] = b * 255
+    image[offset * 4 + 3] = 255
+  end
+
 end
-
-
 
 
 defmodule Bmpgen do
@@ -72,34 +97,26 @@ defmodule Main do
         x * Random.randint(1, 32767) / 32767
     end
     
-    def sphereMaker(spheres, 1, max) do
-        Matrex.set(spheres, max, 1, r)
-        Matrex.set(spheres, max, 2, g)
-        Matrex.set(spheres, max, 3, b)
-        Matrex.set(spheres, max, 4, radius)
-        Matrex.set(spheres, max, 5, x)
-        Matrex.set(spheres, max, 6, y)
-        Matrex.set(spheres, max, 7, z)
-        [%Sphere{
-            r: ,
-            g: Main.rnd(1),
-            b: Main.rnd(1),
-            radius: Main.rnd(100) + 20,
-            x: Main.rnd(1000) - 500,
-            y: Main.rnd(1000) - 500,
-            z: Main.rnd(1000) - 500,
-        }]
+    def sphereMaker(spheres, max, max) do
+      max = max - 1
+        Matrex.set(spheres, 1, max * 7 + 1, Main.rnd(1)) 
+        |> Matrex.set( 1, max * 7 + 2, Main.rnd(1)) #g
+        |> Matrex.set( 1, max * 7 + 3, Main.rnd(1)) #b
+        |> Matrex.set( 1, max * 7 + 4, Main.rnd(100) + 20) #radius
+        |> Matrex.set( 1, max * 7 + 5, Main.rnd(1000) - 500) #x
+        |> Matrex.set( 1, max * 7 + 6, Main.rnd(1000) - 500) #y
+        |> Matrex.set( 1, max * 7 + 7, Main.rnd(1000) - 500) #z
     end
-    def sphereMaker(spheres, n) do
-        [%Sphere{
-            r: Main.rnd(1),
-            g: Main.rnd(1),
-            b: Main.rnd(1),
-            radius: Main.rnd(100) + 20,
-            x: Main.rnd(1000) - 500,
-            y: Main.rnd(1000) - 500,
-            z: Main.rnd(1000) - 500,
-        }] ++ sphereMaker(n - 1)
+    def sphereMaker(spheres, n, max) do
+      n = n - 1
+      spheres  = Matrex.set(spheres, 1, n * 7 + 1, Main.rnd(1)) 
+      |> Matrex.set( 1, n * 7 + 2, Main.rnd(1)) #g
+      |> Matrex.set( 1, n * 7 + 3, Main.rnd(1)) #b
+      |> Matrex.set( 1, n * 7 + 4, Main.rnd(100) + 20) #radius
+      |> Matrex.set( 1, n * 7 + 5, Main.rnd(1000) - 500) #x
+      |> Matrex.set( 1, n * 7 + 6, Main.rnd(1000) - 500) #y
+      |> Matrex.set( 1, n * 7 + 7, Main.rnd(1000) - 500) #z
+      |> sphereMaker(n + 2, max)
     end
 
     def all do
@@ -107,27 +124,38 @@ defmodule Main do
     end
 
     def main do
-        sphereList = sphereMaker(20)
+        sphereList = Matrex.zeros(1, 20 * 7)
+        sphereList = sphereMaker(sphereList, 1, 20)
+        IO.inspect(sphereList)
+        kernel = GPotion.load(&RayTracer.raytracing)
         
+        refSphere = GPotion.new_gmatrex(sphereList)
+        refImag = GPotion.new_gmatrex(1, 1024 * 1024 * 4)
+        #GPotion.spawn(kernel,{numberOfBlocks,1,1},{threadsPerBlock,1,1},[1024, refSphere, refImag])
+        
+        GPotion.spawn(kernel,{64,64,1},{8,8,1},[1024, refSphere, refImag])
+        GPotion.synchronize()
+        
+
         #color = CPUraytracer.loopSpheres(sphereList, {0, 0, 0}, {1, 1}, 0, 20, CPUraytracer.minusinf)
         #sphereLocal = Enum.at(sphereList, 19)
-        image = Matrex.zeros(1, (CPUraytracer.dim + 1)* (CPUraytracer.dim + 1) * 4)
-        image = CPUraytracer.kernelLoop(sphereList, image, 1, 1)
-        IO.inspect(image)
+        #image = Matrex.zeros(1, (CPUraytracer.dim + 1)* (CPUraytracer.dim + 1) * 4)
+        #image = CPUraytracer.kernelLoop(sphereList, image, 1, 1)
+        #IO.inspect(image)
 
 
-        width = 1024
-        height = 1024
+        #width = 1024
+        #height = 1024
 
-        widthInBytes = width * Bmpgen.bytes_per_pixel
+        #widthInBytes = width * Bmpgen.bytes_per_pixel
 
-        paddingSize = rem((4 - rem(widthInBytes, 4)), 4)
-        stride = widthInBytes + paddingSize
+        #paddingSize = rem((4 - rem(widthInBytes, 4)), 4)
+        #stride = widthInBytes + paddingSize
 
-        IO.puts("ray tracer completo, começando escrita")
-        Bmpgen.writeFileHeader(height, stride)
-        Bmpgen.writeInfoHeader(height, width)
-        Bmpgen.recursiveWrite(image, 1, (CPUraytracer.dim + 1)* (CPUraytracer.dim + 1) * 4)
+        #IO.puts("ray tracer completo, começando escrita")
+        #Bmpgen.writeFileHeader(height, stride)
+        #Bmpgen.writeInfoHeader(height, width)
+        #Bmpgen.recursiveWrite(image, 1, (CPUraytracer.dim + 1)* (CPUraytracer.dim + 1) * 4)
 
         
 
