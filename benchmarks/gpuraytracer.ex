@@ -1,56 +1,64 @@
 import Random
 import Matrex
 import Bitwise
-#import GPotion
 
 Random.seed(42)
 
 
 
 defmodule RayTracer do
+import GPotion
+
   #gpotion raytracing( s, ptr, dim,spheres, inf ) do
-  gpotion raytracing(dim, spheres, image) do
-    x = threadIdx.x + blockIdx.x * blockDim.x
-    y = threadIdx.y + blockIdx.y * blockDim.y
-    offset = x + y * blockDim.x * gridDim.x
-    
-    ox = (x - dim/2)
-    oy = (y - dim/2)
+ 
+gpotion raytracing(dim, spheres, image) do
 
-    r = 0.0
-    g = 0.0
-    b = 0.0
+  x = threadIdx.x + blockIdx.x * blockDim.x
+  y = threadIdx.y + blockIdx.y * blockDim.y
+  offset = x + y * blockDim.x * gridDim.x
+  #testando se poderiam ser os comments
+  ox = (x - dim/2)
+  oy = (y - dim/2)
 
-    maxz = -999999999
-    for i in range(0, 20) do
-      n = 0.0
-      #{ #hit
-      dx = ox - sphere[i * 7 + 4]
-      dy = oy - sphere[i * 7 + 5]
+  r = 0.0
+  g = 0.0
+  b = 0.0
 
-      if (dx * dx + dy * dy) <  sphere[i * 7 + 3] * sphere[i * 7 + 3] do
-        dzsqrd = sphere[i * 7 + 3] * sphere[i * 7 + 3] - dx * dx - dy * dy
-        dz = sqrt(dzsqrd)
-        n = dz / sqrt(sphere[i * 7 + 3] * sphere[i * 7 + 3])
-        dz = dz + sphere[i * 7 + 6] 
-      end
-      #}
+  maxz = -9999999.0
 
-      if t > maxz do
-        fscale = n
-        r = sphere[i * 7 + 0] * fscale
-        g = sphere[i * 7 + 1] * fscale
-        b = sphere[i * 7 + 2] * fscale
-        maxz = t
-      end
+  for i in range(0, 20) do
+  
+    n = 0.0
+  
+    dx = ox - spheres[i * 7 + 4]
+    dy = oy - spheres[i * 7 + 5]
+
+
+    if (dx * dx + dy * dy) <  spheres[i * 7 + 3] * spheres[i * 7 + 3] do
+      dzsqrd = spheres[i * 7 + 3] * spheres[i * 7 + 3] - dx * dx - dy * dy
+      dz = sqrt(dzsqrd)
+      n = dz / sqrt(spheres[i * 7 + 3] * spheres[i * 7 + 3])
+      dz = dz + spheres[i * 7 + 6] 
     end
+    
+    fscale = 0.0
 
-    image[offset * 4 + 0] = r * 255
-    image[offset * 4 + 1] = g * 255
-    image[offset * 4 + 2] = b * 255
-    image[offset * 4 + 3] = 255
+    if dz > maxz do
+      fscale = n
+      r = spheres[i * 7 + 0] * fscale
+      g = spheres[i * 7 + 1] * fscale
+      b = spheres[i * 7 + 2] * fscale
+      maxz = dz
+    end
   end
+  #image[0] = 1 + 0 * (dim + sphere[i * 7 ] + 0 * (r + g + b + oy + ox + maxz + n + dx + dy + dz + fscale) )
+  image[offset * 4 + 0] = r * 255 
+  image[offset * 4 + 1] = g * 255
+  image[offset * 4 + 2] = b * 255
+  image[offset * 4 + 3] = 255
 
+  
+end
 end
 
 
@@ -126,18 +134,22 @@ defmodule Main do
     def main do
         sphereList = Matrex.zeros(1, 20 * 7)
         sphereList = sphereMaker(sphereList, 1, 20)
-        IO.inspect(sphereList)
-        kernel = GPotion.load(&RayTracer.raytracing)
+        kernel = GPotion.load(&RayTracer.raytracing/3)
         
         refSphere = GPotion.new_gmatrex(sphereList)
-        refImag = GPotion.new_gmatrex(1, 1024 * 1024 * 4)
+        imageList = Matrex.zeros(1, 1024 * 1024 * 4)
+        refImag = GPotion.new_gmatrex(imageList)
+        IO.inspect(imageList)
+
         #GPotion.spawn(kernel,{numberOfBlocks,1,1},{threadsPerBlock,1,1},[1024, refSphere, refImag])
-        
-        GPotion.spawn(kernel,{64,64,1},{8,8,1},[1024, refSphere, refImag])
+
+        GPotion.spawn(kernel,{trunc(1024/16),trunc(1024/16),1},{16,16,1},[1024, refSphere, refImag])
         GPotion.synchronize()
         
+        result = GPotion.get_gmatrex(refImag)
+        IO.inspect(result)
 
-        #color = CPUraytracer.loopSpheres(sphereList, {0, 0, 0}, {1, 1}, 0, 20, CPUraytracer.minusinf)
+
         #sphereLocal = Enum.at(sphereList, 19)
         #image = Matrex.zeros(1, (CPUraytracer.dim + 1)* (CPUraytracer.dim + 1) * 4)
         #image = CPUraytracer.kernelLoop(sphereList, image, 1, 1)
