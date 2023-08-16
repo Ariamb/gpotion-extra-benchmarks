@@ -33,7 +33,7 @@ gpotion raytracing(dim, spheres, image) do
     dx = ox - spheres[i * 7 + 4]
     dy = oy - spheres[i * 7 + 5]
 
-
+    dz = 0.0
     if (dx * dx + dy * dy) <  spheres[i * 7 + 3] * spheres[i * 7 + 3] do
       dzsqrd = spheres[i * 7 + 3] * spheres[i * 7 + 3] - dx * dx - dy * dy
       dz = sqrt(dzsqrd)
@@ -146,28 +146,23 @@ defmodule Main do
         GPotion.spawn(kernel,{trunc(1024/16),trunc(1024/16),1},{16,16,1},[1024, refSphere, refImag])
         GPotion.synchronize()
         
-        result = GPotion.get_gmatrex(refImag)
-        IO.inspect(result)
+        image = GPotion.get_gmatrex(refImag)
+        IO.inspect(image)
 
+        width = 1024
+        height = 1024
 
-        #sphereLocal = Enum.at(sphereList, 19)
-        #image = Matrex.zeros(1, (CPUraytracer.dim + 1)* (CPUraytracer.dim + 1) * 4)
-        #image = CPUraytracer.kernelLoop(sphereList, image, 1, 1)
-        #IO.inspect(image)
+        widthInBytes = width * Bmpgen.bytes_per_pixel
 
+        paddingSize = rem((4 - rem(widthInBytes, 4)), 4)
+        stride = widthInBytes + paddingSize
 
-        #width = 1024
-        #height = 1024
-
-        #widthInBytes = width * Bmpgen.bytes_per_pixel
-
-        #paddingSize = rem((4 - rem(widthInBytes, 4)), 4)
-        #stride = widthInBytes + paddingSize
-
-        #IO.puts("ray tracer completo, começando escrita")
-        #Bmpgen.writeFileHeader(height, stride)
-        #Bmpgen.writeInfoHeader(height, width)
-        #Bmpgen.recursiveWrite(image, 1, (CPUraytracer.dim + 1)* (CPUraytracer.dim + 1) * 4)
+        IO.puts("ray tracer completo, começando escrita")
+        Bmpgen.writeFileHeader(height, stride)
+        Bmpgen.writeInfoHeader(height, width)
+        Bmpgen.recursiveWrite(image, 1, (1024 + 1)* (1024 + 1) * 4)
+        
+        
 
         
 

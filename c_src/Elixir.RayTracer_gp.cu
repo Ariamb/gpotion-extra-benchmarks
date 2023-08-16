@@ -16,10 +16,11 @@ for( int i = 0; i<20; i++){
 	float n = 0.0;
 	float dx = (ox - spheres[((i * 7) + 4)]);
 	float dy = (oy - spheres[((i * 7) + 5)]);
+	float dz = 0.0;
 if((((dx * dx) + (dy * dy)) < (spheres[((i * 7) + 3)] * spheres[((i * 7) + 3)])))
 {
 	float dzsqrd = (((spheres[((i * 7) + 3)] * spheres[((i * 7) + 3)]) - (dx * dx)) - (dy * dy));
-	float dz = sqrt(dzsqrd);
+	dz = sqrt(dzsqrd);
 	n = (dz / sqrt((spheres[((i * 7) + 3)] * spheres[((i * 7) + 3)])));
 	dz = (dz + spheres[((i * 7) + 6)]);
 }
