@@ -8,9 +8,9 @@ defmodule CPUraytracer do
 
         ox = x - CPUraytracer.dim / 2
         oy = y - CPUraytracer.dim / 2
-
-        {r, g, b} = loopSpheres(spheres, {0, 0, 0}, {x, y}, 0, length(spheres), CPUraytracer.minusinf)
         offset = (x + y * CPUraytracer.dim) * 4 + 1
+
+        {r, g, b} = loopSpheres(spheres, {0, 0, 0}, {ox, oy}, 0, length(spheres), CPUraytracer.minusinf)
         image = Matrex.set(image, 1, offset + 0, b)
         image = Matrex.set(image, 1, offset + 1, g)
         image = Matrex.set(image, 1, offset + 2, r)
@@ -18,11 +18,11 @@ defmodule CPUraytracer do
         image
     end
 
-    def kernelLoop(spheres, image, 1025, 1025) do #1025, 1025
+    def kernelLoop(spheres, image, 257, 257) do #257, 257
         image
     end
     
-    def kernelLoop(spheres, image, i, 1025) do #1025
+    def kernelLoop(spheres, image, i, 257) do #257
         #IO.puts("#{i}/#{CPUraytracer.dim}")
         CPUraytracer.kernelLoop(spheres, image, i + 1, 1)
     end
@@ -32,8 +32,8 @@ defmodule CPUraytracer do
     end
 
     def loopSpheres(sphereList, color, {x, y}, maxi, maxi, maxz) do
-        if y >= 1024 do
-            IO.puts("#{x}/1024")    
+        if y >= 128 do
+            IO.puts("#{x}/256")    
         end
         color
 
@@ -74,7 +74,7 @@ defmodule CPUraytracer do
     end
     
     def dim do
-        1024
+        256
         
     end
     def minusinf do
@@ -152,10 +152,10 @@ defmodule Main do
             r: Main.rnd(1),
             g: Main.rnd(1),
             b: Main.rnd(1),
-            radius: Main.rnd(100) + 20,
-            x: Main.rnd(1000) - 500,
-            y: Main.rnd(1000) - 500,
-            z: Main.rnd(1000) - 500,
+            radius: Main.rnd(20) + 5,
+            x: Main.rnd(256) - 128,
+            y: Main.rnd(256) - 128,
+            z: Main.rnd(256) - 128,
         }]
     end
     def sphereMaker(n) do
@@ -163,10 +163,10 @@ defmodule Main do
             r: Main.rnd(1),
             g: Main.rnd(1),
             b: Main.rnd(1),
-            radius: Main.rnd(100) + 20,
-            x: Main.rnd(1000) - 500,
-            y: Main.rnd(1000) - 500,
-            z: Main.rnd(1000) - 500,
+            radius: Main.rnd(20) + 5,
+            x: Main.rnd(256) - 128,
+            y: Main.rnd(256) - 128,
+            z: Main.rnd(256) - 128,
         }] ++ sphereMaker(n - 1)
     end
 
@@ -184,8 +184,8 @@ defmodule Main do
         IO.inspect(image)
 
 
-        width = 1024
-        height = 1024
+        width = 256
+        height = 256
 
         widthInBytes = width * Bmpgen.bytes_per_pixel
 
