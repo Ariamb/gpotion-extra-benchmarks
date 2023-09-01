@@ -8,24 +8,14 @@ defmodule CPUraytracer do
 
         ox = x - CPUraytracer.dim / 2
         oy = y - CPUraytracer.dim / 2
-        #offset = (x + y * CPUraytracer.dim) * 4 + 1
-
-        {r, g, b} = loopSpheres(spheres, {0, 0, 0}, {ox, oy}, 0, length(spheres), CPUraytracer.minusinf)
-        #image = Matrex.set(image, 1, offset + 0, b)
-        #image = Matrex.set(image, 1, offset + 1, g)
-        #image = Matrex.set(image, 1, offset + 2, r)
-        #image = Matrex.set(image, 1, offset + 3, 255)
-        [b, g, r, 255 | image]
+        {r, g, b} = loopSpheres(spheres, {0, 0, 0}, {ox, oy}, CPUraytracer.minusinf)
+        [r, g, b, 255 | image]
     end
 
     def kernelLoop(spheres, image, 257, 257) do #257, 257
         image
     end
     
-    #def kernelLoop(spheres, image, i, 257) do #257
-    #    #IO.puts("#{i}/#{CPUraytracer.dim}")
-    #    CPUraytracer.kernelLoop(spheres, image, i + 1, 1)
-    #end
     
     def kernelLoop(spheres, image, 257, j) do #257
         #IO.puts("#{i}/#{CPUraytracer.dim}")
@@ -36,56 +26,45 @@ defmodule CPUraytracer do
         CPUraytracer.kernel(spheres, CPUraytracer.kernelLoop(spheres, image, i+1, j),{i, j})
     end
 
-    def loopSpheres(sphereList, color, {x, y}, maxi, maxi, maxz) do
-        if y >= 128 or x >= 128 do
-            #IO.puts("#{x}/256")    
-        end
-        color
-
-        
-    end
-
-
-    def overflowFix(color) do #for values bigger than 255
-        if color > 255 do
-            color = 255
-        else
-            color
-        end
-
-    end
-    def loopSpheres(sphereList, color, {ox, oy}, i, maxi, maxz) do
-        sphereLocal = Enum.at(sphereList, i)
-        {n, z} = Sphere.hit(sphereLocal, ox, oy)
-        {r, g, b} = color
-        if maxz != -999 and z != -999 do
-            #IO.puts("maxz: #{maxz} candidatez: #{z}, current sphere number: #{i}")    
-        end
-        if  z > maxz do
-            
-            
-            loopSpheres(sphereList, {
-                overflowFix(sphereLocal.r * n * 255),
-                overflowFix(sphereLocal.g * n * 255),
-                overflowFix(sphereLocal.b * n * 255)
-            }, {ox, oy}, i + 1, maxi, z)
-        else
-            loopSpheres(sphereList, color, {ox, oy}, i + 1, maxi, z)
-        end
-        
-
-        #    maxz = z
+    def loopSpheres([], color, {x, y},  maxz) do
+        #if x >= 128 do
+        #    IO.puts("#{y + 128 - 1}/256")    
         #end
-        #loopSpheres(color, spheres, i + 1, maxi, pos, maxz)
+        color
+    end
 
+    def loopSpheres([sphereLocal | sphereList], color, {ox, oy}, maxz) do
+        dx = ox - sphereLocal.x
+        dy = oy - sphereLocal.y
+        {n, t} = if (dx * dx + dy * dy) < sphereLocal.radius * sphereLocal.radius do
+            dz = :math.sqrt(sphereLocal.radius * sphereLocal.radius - dx * dx - dy * dy)
+            n = dz / :math.sqrt(sphereLocal.radius * sphereLocal.radius)
+            {n, dz + sphereLocal.z}
+        else
+            {0, CPUraytracer.minusinf}
+        end
+        
+
+        if  t > maxz do
+            maxz = t
+            loopSpheres(sphereList, {
+                sphereLocal.r * n * 255,
+                sphereLocal.g * n * 255,
+                sphereLocal.b * n * 255
+            }, {ox, oy}, maxz)
+        else
+            loopSpheres(sphereList, color, {ox, oy}, maxz)
+        end
     end
     
     def dim do
         256
-        
+    end
+    def adjusted_dim do
+        CPUraytracer.dim + 1
     end
     def minusinf do
-        -999
+        -999999
     end
 end
 
@@ -95,18 +74,6 @@ defmodule Sphere do
 
     def new() do
         %Sphere{}
-    end
-    
-    def hit(sphere, ox, oy) do
-        dx = ox - sphere.x
-        dy = oy - sphere.y
-        if (dx * dx + dy * dy) < sphere.radius * sphere.radius do
-            dz = :math.sqrt(sphere.radius * sphere.radius - dx * dx - dy * dy)
-            n = dz / :math.sqrt(sphere.radius * sphere.radius)
-            return = {n, dz + sphere.z}
-        else
-            return = {0, CPUraytracer.minusinf} #makeshift infinity in elixir, using 32 memory bits
-        end
     end
 end
 
@@ -130,7 +97,7 @@ defmodule Bmpgen do
   end
 
   #def recursiveWrite([a | image], i, max) do
-  def recursiveWrite([b, g, r, 255 | image]) do
+  def recursiveWrite([r, g, b, 255 | image]) do
     l = [<<trunc(r)>>, <<trunc(b)>>, <<trunc(g)>>, <<255>>]
     File.write!("img-cpu-999.bmp", l, [:append])
     recursiveWrite(image)
@@ -141,14 +108,12 @@ defmodule Bmpgen do
   def writeFileHeader(height, stride) do
     fileSize = Bmpgen.fileHeaderSize + Bmpgen.infoHeaderSize + (stride * height)    
     fileHeader = ['B'] ++ ['M'] ++ [<<fileSize>>] ++ [<<fileSize >>> 8>>] ++ [<<fileSize >>> 16>>] ++ [<<fileSize >>> 24>>] ++ List.duplicate(<<0>>, 4) ++ [<<Bmpgen.fileHeaderSize + Bmpgen.infoHeaderSize>>] ++ List.duplicate(<<0>>, 3)
-    #IO.inspect(fileHeader)
     IO.puts("\n-----------------------\n")
     File.write!("img-cpu-999.bmp", fileHeader)
   end
   def writeInfoHeader(height, width) do
     
     infoHeader = [<<Bmpgen.infoHeaderSize>>] ++ List.duplicate(<<0>>, 3) ++ [<<width>>, <<width >>> 8>>, <<width >>> 16>>, <<width >>> 24>>, <<height>>, <<height >>> 8>>, <<height >>> 16>>, <<height >>> 24>>, <<1>>, <<0>>, <<Bmpgen.bytes_per_pixel * 8>>] ++ List.duplicate(<<0>>, 25)
-    #IO.inspect(infoHeader)
     File.write!("img-cpu-999.bmp", infoHeader, [:append])
   end
 end
@@ -178,7 +143,7 @@ defmodule Main do
             x: Main.rnd(256) - 128,
             y: Main.rnd(256) - 128,
             z: Main.rnd(256) - 128,
-        }] ++ sphereMaker(n - 1)
+        } | sphereMaker(n - 1)]
     end
 
     def all do
@@ -187,13 +152,9 @@ defmodule Main do
 
     def main do
         sphereList = sphereMaker(20)
-        IO.inspect(sphereList)
-        #color = CPUraytracer.loopSpheres(sphereList, {0, 0, 0}, {1, 1}, 0, 20, CPUraytracer.minusinf)
-        #sphereLocal = Enum.at(sphereList, 19)
-        #image = Matrex.zeros(1, (CPUraytracer.dim + 1)* (CPUraytracer.dim + 1) * 4)
-        image = []
+
         prev = System.monotonic_time()
-        image = CPUraytracer.kernelLoop(sphereList, image, 1, 1)
+        image = CPUraytracer.kernelLoop(sphereList, [], 1, 1)
         next = System.monotonic_time()
         IO.puts("tempo: #{next - prev}")
         IO.inspect(image)
