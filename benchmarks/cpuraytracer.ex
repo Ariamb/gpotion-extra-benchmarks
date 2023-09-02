@@ -2,7 +2,7 @@ import Random
 import Matrex
 import Bitwise
 
-Random.seed(42)
+Random.seed(313)
 defmodule CPUraytracer do
     def kernel(spheres, image, {x, y}) do
 
@@ -38,7 +38,7 @@ defmodule CPUraytracer do
 
     def loopSpheres(sphereList, color, {x, y}, maxi, maxi, maxz) do
         if y >= 128 or x >= 128 do
-            IO.puts("#{x}/256")    
+            #IO.puts("#{x}/256")    
         end
         color
 
@@ -58,10 +58,12 @@ defmodule CPUraytracer do
         sphereLocal = Enum.at(sphereList, i)
         {n, z} = Sphere.hit(sphereLocal, ox, oy)
         {r, g, b} = color
-        if r > 255 or g > 255 or b > 255 do
-            IO.puts("COLOR OVERFLOW: #{r} #{g} #{b}")
+        if maxz != -999 and z != -999 do
+            #IO.puts("maxz: #{maxz} candidatez: #{z}, current sphere number: #{i}")    
         end
         if  z > maxz do
+            
+            
             loopSpheres(sphereList, {
                 overflowFix(sphereLocal.r * n * 255),
                 overflowFix(sphereLocal.g * n * 255),
@@ -83,7 +85,7 @@ defmodule CPUraytracer do
         
     end
     def minusinf do
-        -999999999
+        -999
     end
 end
 
@@ -129,8 +131,8 @@ defmodule Bmpgen do
 
   #def recursiveWrite([a | image], i, max) do
   def recursiveWrite([b, g, r, 255 | image]) do
-    l = [<<trunc(b)>>, <<trunc(g)>>, <<trunc(r)>>, <<255>>]
-    File.write!("img.bmp", l, [:append])
+    l = [<<trunc(r)>>, <<trunc(b)>>, <<trunc(g)>>, <<255>>]
+    File.write!("img-cpu-999.bmp", l, [:append])
     recursiveWrite(image)
     
 
@@ -141,13 +143,13 @@ defmodule Bmpgen do
     fileHeader = ['B'] ++ ['M'] ++ [<<fileSize>>] ++ [<<fileSize >>> 8>>] ++ [<<fileSize >>> 16>>] ++ [<<fileSize >>> 24>>] ++ List.duplicate(<<0>>, 4) ++ [<<Bmpgen.fileHeaderSize + Bmpgen.infoHeaderSize>>] ++ List.duplicate(<<0>>, 3)
     #IO.inspect(fileHeader)
     IO.puts("\n-----------------------\n")
-    File.write!("img.bmp", fileHeader)
+    File.write!("img-cpu-999.bmp", fileHeader)
   end
   def writeInfoHeader(height, width) do
     
     infoHeader = [<<Bmpgen.infoHeaderSize>>] ++ List.duplicate(<<0>>, 3) ++ [<<width>>, <<width >>> 8>>, <<width >>> 16>>, <<width >>> 24>>, <<height>>, <<height >>> 8>>, <<height >>> 16>>, <<height >>> 24>>, <<1>>, <<0>>, <<Bmpgen.bytes_per_pixel * 8>>] ++ List.duplicate(<<0>>, 25)
     #IO.inspect(infoHeader)
-    File.write!("img.bmp", infoHeader, [:append])
+    File.write!("img-cpu-999.bmp", infoHeader, [:append])
   end
 end
 
@@ -185,7 +187,7 @@ defmodule Main do
 
     def main do
         sphereList = sphereMaker(20)
-        
+        IO.inspect(sphereList)
         #color = CPUraytracer.loopSpheres(sphereList, {0, 0, 0}, {1, 1}, 0, 20, CPUraytracer.minusinf)
         #sphereLocal = Enum.at(sphereList, 19)
         #image = Matrex.zeros(1, (CPUraytracer.dim + 1)* (CPUraytracer.dim + 1) * 4)

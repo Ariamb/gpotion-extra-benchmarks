@@ -11,35 +11,45 @@ void raytracing(int dim, float *spheres, float *image)
 	float r = 0.0;
 	float g = 0.0;
 	float b = 0.0;
-	float maxz = (- 9999999.0);
+	float maxz = (- 99999.0);
 for( int i = 0; i<20; i++){
+	float sphereR = spheres[((i * 7) + 0)];
+	float sphereG = spheres[((i * 7) + 1)];
+	float sphereB = spheres[((i * 7) + 2)];
+	float sphereRadius = spheres[((i * 7) + 3)];
+	float sphereX = spheres[((i * 7) + 4)];
+	float sphereY = spheres[((i * 7) + 5)];
+	float sphereZ = spheres[((i * 7) + 6)];
+	float dx = (ox - sphereX);
+	float dy = (oy - sphereY);
 	float n = 0.0;
-	float dx = (ox - spheres[((i * 7) + 4)]);
-	float dy = (oy - spheres[((i * 7) + 5)]);
+	float t = 0.0;
 	float dz = 0.0;
-if((((dx * dx) + (dy * dy)) < (spheres[((i * 7) + 3)] * spheres[((i * 7) + 3)])))
+if((((dx * dx) + (dy * dy)) < (sphereRadius * sphereRadius)))
 {
-	float dzsqrd = (((spheres[((i * 7) + 3)] * spheres[((i * 7) + 3)]) - (dx * dx)) - (dy * dy));
-	dz = sqrt(dzsqrd);
-	n = (dz / sqrt((spheres[((i * 7) + 3)] * spheres[((i * 7) + 3)])));
-	dz = (dz + spheres[((i * 7) + 6)]);
+	dz = sqrtf((((sphereRadius * sphereRadius) - (dx * dx)) - (dy * dy)));
+	n = (dz / sqrtf((sphereRadius * sphereRadius)));
+	t = (dz + sphereZ);
+}
+else{
+	t = (- 99999.0);
+	n = 0.0;
 }
 
-	float fscale = 0.0;
-if((dz > maxz))
+if((t > maxz))
 {
-	fscale = n;
-	r = (spheres[((i * 7) + 0)] * fscale);
-	g = (spheres[((i * 7) + 1)] * fscale);
-	b = (spheres[((i * 7) + 2)] * fscale);
-	maxz = dz;
+	float fscale = n;
+	r = (sphereR * fscale);
+	g = (sphereG * fscale);
+	b = (sphereB * fscale);
+	maxz = t;
 }
 
 }
 
 	image[((offset * 4) + 0)] = (r * 255);
-	image[((offset * 4) + 1)] = (g * 255);
-	image[((offset * 4) + 2)] = (b * 255);
+	image[((offset * 4) + 1)] = (b * 255);
+	image[((offset * 4) + 2)] = (g * 255);
 	image[((offset * 4) + 3)] = 255;
 }
 
