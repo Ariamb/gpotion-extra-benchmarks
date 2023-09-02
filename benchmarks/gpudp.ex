@@ -1,7 +1,5 @@
-defmodule DP do
+defmodule GPUDP do
   import GPotion
-
-#gpotion add_vectors(ref4,ref3, a, b, n, tpb) do
   gpotion dot_product(ref4, a, b, n) do
 
   __shared__ cache[256]
@@ -41,49 +39,26 @@ defmodule FUNC do
   end
   def fill_array(a, b, i, n) do
     fill_array(Matrex.set(a, 1, i + 1, i), Matrex.set(b, 1, i + 1, i), i+1, n)
-  end
-  def compare_array(_c, _d, n, n) do
-    #IO.puts("altered: #{c[i]} -")
-    #IO.puts("original: #{d[i]} \n")
-  end
-  def compare_array(c, d, i, n) do
-    IO.puts("pos: #{i};  base: #{Matrex.at(d, 1, i+1)};  altered: #{Matrex.at(c, 1, i+1)}  \n")
-    
-    #IO.puts("original: #{d[i]} \n")
-    compare_array(c, d, i+1, n)
-  end
-  def soma_array([], s) do
-    s+0
-  end
-  def soma_array([h|t], s) do
-    soma_array(t, s+h)
-  end
-  
+  end  
 end
 
-n = 33 * 1024
-
-
+{n, _} = Integer.parse(Enum.at(System.argv, 0))
+{iteration, _} = Integer.parse(Enum.at(System.argv, 1))
 
 list = [Enum.to_list(0..n-1)]
 
 vet1 = Matrex.new(list)
 vet2 = Matrex.new(list)
-threadsPerBlock = 256
-
-blocksPerGrid = div((n+threadsPerBlock-1), threadsPerBlock)
-IO.puts("(#{n} + #{threadsPerBlock} - 1) / #{threadsPerBlock} = #{blocksPerGrid}")
-vet3 = Matrex.ones(1,blocksPerGrid)
-
-
 
 kernel=GPotion.load(&DP.dot_product/5)
 
-threadsPerBlock = 256;
+threadsPerBlock = 256
 blocksPerGrid = div(n + threadsPerBlock - 1, threadsPerBlock)
 numberOfBlocks = blocksPerGrid
 
-#prev = System.monotonic_time()
+vet3 = Matrex.ones(1,blocksPerGrid)
+
+prev = System.monotonic_time()
 
 ref1=GPotion.new_gmatrex(vet1)
 ref2=GPotion.new_gmatrex(vet2)
@@ -93,28 +68,18 @@ ref3=GPotion.new_gmatrex(vet3)
 GPotion.spawn(kernel,{numberOfBlocks,1,1},{threadsPerBlock,1,1},[ref3, ref1,ref2,n])
 GPotion.synchronize()
 
-#next = System.monotonic_time()
+next = System.monotonic_time()
 #IO.puts "time gpu #{System.convert_time_unit(next-prev,:native,:millisecond)}"
-
-#resultfake = GPotion.get_gmatrex(ref3)
 
 resultreal = GPotion.get_gmatrex(ref3)
 s = Matrex.sum(resultreal)
-IO.puts("blocksPerGrid: #{blocksPerGrid}")
-IO.puts("rel, sum = #{s}")
 
-IO.puts("matrex, sum matrex = #{Matrex.sum(Matrex.dot_nt(vet1, vet2))}")
+#next = System.monotonic_time()
 
-IO.inspect resultreal
-#IO.puts("fake")
-#IO.inspect resultfake
-
+text = "time: #{next - prev}, iteration: #{iteration}, array size: #{n} \n"
+File.write!("time-GPUDP.txt", text, [:append])
 
 #prev = System.monotonic_time()
 #eresult = Matrex.add(vet1,vet2)
 #next = System.monotonic_time()
 #IO.puts "time cpu #{System.convert_time_unit(next-prev,:native,:millisecond)}"
-
-#diff = Matrex.subtract(result,eresult)
-
-#IO.puts "this value must be zero: #{Matrex.sum(diff)}"
