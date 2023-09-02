@@ -8,8 +8,6 @@ Random.seed(313)
 
 defmodule RayTracer do
 import GPotion
-
-  #gpotion raytracing( s, ptr, dim,spheres, inf ) do
  
 gpotion raytracing(dim, spheres, image) do
 
@@ -60,7 +58,6 @@ gpotion raytracing(dim, spheres, image) do
     
     
   end
-  #image[0] = 1 + 0 * (dim + sphere[i * 7 ] + 0 * (r + g + b + oy + ox + maxz + n + dx + dy + dz + fscale) )
   image[offset * 4 + 0] = r * 255 
   image[offset * 4 + 1] = b * 255
   image[offset * 4 + 2] = g * 255
@@ -89,22 +86,21 @@ defmodule Bmpgen do
 
   def recursiveWrite(image, i, max) do
     x = trunc(Matrex.at(image, 1, i))
-    File.write!("imgAGORAVAI.bmp", <<x>>, [:append])
+    File.write!("img-gpuraytracer-#{Main.dim}.bmp", <<x>>, [:append])
     recursiveWrite(image, i+1, max)
   end
 
   def writeFileHeader(height, stride) do
     fileSize = Bmpgen.fileHeaderSize + Bmpgen.infoHeaderSize + (stride * height)    
     fileHeader = ['B'] ++ ['M'] ++ [<<fileSize>>] ++ [<<fileSize >>> 8>>] ++ [<<fileSize >>> 16>>] ++ [<<fileSize >>> 24>>] ++ List.duplicate(<<0>>, 4) ++ [<<Bmpgen.fileHeaderSize + Bmpgen.infoHeaderSize>>] ++ List.duplicate(<<0>>, 3)
-    #IO.inspect(fileHeader)
     IO.puts("\n-----------------------\n")
-    File.write!("imgAGORAVAI.bmp", fileHeader)
+    File.write!("img-gpuraytracer-#{Main.dim}.bmp", fileHeader)
   end
   def writeInfoHeader(height, width) do
     
     infoHeader = [<<Bmpgen.infoHeaderSize>>] ++ List.duplicate(<<0>>, 3) ++ [<<width>>, <<width >>> 8>>, <<width >>> 16>>, <<width >>> 24>>, <<height>>, <<height >>> 8>>, <<height >>> 16>>, <<height >>> 24>>, <<1>>, <<0>>, <<Bmpgen.bytes_per_pixel * 8>>] ++ List.duplicate(<<0>>, 25)
     #IO.inspect(infoHeader)
-    File.write!("imgAGORAVAI.bmp", infoHeader, [:append])
+    File.write!("img-gpuraytracer-#{Main.dim}.bmp", infoHeader, [:append])
   end
 end
 
@@ -139,19 +135,27 @@ defmodule Main do
       |> sphereMaker(n + 1, max)
     end
 
-    def all do
-        
+    def dim do
+      {d, _} = Integer.parse(Enum.at(System.argv, 0))
+      d
+    end
+    def spheres do
+      {s, _} = Integer.parse(Enum.at(System.argv, 1))
+      s
     end
 
     def main do
-        sphereList = Matrex.zeros(1, 20 * 7)
-        sphereList = sphereMaker(sphereList, 1, 20)
+        sphereList = Matrex.zeros(1, Main.spheres * 7)
+        sphereList = sphereMaker(sphereList, 1, Main.spheres)
 
         IO.inspect(sphereList)
         kernel = GPotion.load(&RayTracer.raytracing/3)
         
+        width = Main.dim
+        height = Main.dim
+
         refSphere = GPotion.new_gmatrex(sphereList)
-        imageList = Matrex.zeros(1, (256+1) * (256+1) * 4)
+        imageList = Matrex.zeros(1, (width + 1) * (height + 1) * 4)
         IO.inspect(imageList[:size])
 
         refImag = GPotion.new_gmatrex(imageList)
@@ -159,15 +163,14 @@ defmodule Main do
 
         #GPotion.spawn(kernel,{numberOfBlocks,1,1},{threadsPerBlock,1,1},[256, refSphere, refImag])
 
-        GPotion.spawn(kernel,{trunc(256/16),trunc(256/16),1},{16,16,1},[256, refSphere, refImag])
+        GPotion.spawn(kernel,{trunc(width/16),trunc(height/16),1},{16,16,1},[width, refSphere, refImag])
         GPotion.synchronize()
         
         image = GPotion.get_gmatrex(refImag)
         IO.inspect(image)
         {a, b} =  image[:size]
         IO.puts(Matrex.at(image, 1, trunc(b/2)))
-        width = 256
-        height = 256
+
 
         widthInBytes = width * Bmpgen.bytes_per_pixel
 
@@ -178,11 +181,14 @@ defmodule Main do
         IO.inspect(image[:size])
         Bmpgen.writeFileHeader(height, stride)
         Bmpgen.writeInfoHeader(height, width)
-        Bmpgen.recursiveWrite(image, 1, (256+1)* (256+1) * 4)
+        Bmpgen.recursiveWrite(image, 1, (width+1)* (height+1) * 4)
 
-        
-        
+        {iteration, _} = Integer.parse(Enum.at(System.argv, 2))
+        text = "time: #{next - prev}, iteration: #{iteration}, dimension: #{height}x#{width}, spheres: #{CPUraytracer.spheres} \n"
 
+        File.write!("time-cpuraytracer.txt", text, [:append])
+        
+      
         
 
     end
