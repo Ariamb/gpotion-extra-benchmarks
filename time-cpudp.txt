@@ -1,0 +1,4 @@
+time: 293053753, iteration: 2, array size: 33792 
+time: 257851179, iteration: 2, array size: 33792 
+time: 250104756, iteration: 2, array size: 33792 
+time: 253160395, iteration: 2, array size: 33792 

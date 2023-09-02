@@ -1,34 +1,33 @@
-import Random
-import Matrex
+
 import Bitwise
 
 Random.seed(313)
 defmodule CPUraytracer do
-    def kernel(spheres, image, {x, y}) do
+    def kernel(spheres, image, {x, y}, dim) do
 
-        ox = x - CPUraytracer.dim / 2
-        oy = y - CPUraytracer.dim / 2
+        ox = x - dim / 2
+        oy = y - dim / 2
         {r, g, b} = loopSpheres(spheres, {0, 0, 0}, {ox, oy}, CPUraytracer.minusinf)
         [r, g, b, 255 | image]
     end
 
-    def kernelLoop(spheres, image, 257, 257) do #257, 257
+    def kernelLoop(_, image, max, max, max) do 
         image
     end
     
     
-    def kernelLoop(spheres, image, 257, j) do #257
-        #IO.puts("#{i}/#{CPUraytracer.dim}")
-        CPUraytracer.kernelLoop(spheres, image, 1, j+1)
+    
+    def kernelLoop(spheres, image, max, j, max) do 
+        CPUraytracer.kernelLoop(spheres, image, 0, j+1, max)
     end
 
-    def kernelLoop(spheres, image, i, j) do
-        CPUraytracer.kernel(spheres, CPUraytracer.kernelLoop(spheres, image, i+1, j),{i, j})
+    def kernelLoop(spheres, image, i, j, max) do
+        CPUraytracer.kernel(spheres, CPUraytracer.kernelLoop(spheres, image, i+1, j, max),{i, j}, max)
     end
 
-    def loopSpheres([], color, {x, y},  maxz) do
-        #if x >= 128 do
-        #    IO.puts("#{y + 128 - 1}/256")    
+    def loopSpheres([], color, _,  _) do
+        #if x >= CPUraytracer.dim / 2 do
+        #    IO.puts("#{y + CPUraytracer/2 - 1}/CPUraytracer.dim")    
         #end
         color
     end
@@ -58,10 +57,12 @@ defmodule CPUraytracer do
     end
     
     def dim do
-        256
+        {d, _} = Integer.parse(Enum.at(System.argv, 0))
+        d
     end
-    def adjusted_dim do
-        CPUraytracer.dim + 1
+    def spheres do
+        {s, _} = Integer.parse(Enum.at(System.argv, 1))
+        s
     end
     def minusinf do
         -999999
@@ -129,9 +130,9 @@ defmodule Main do
             g: Main.rnd(1),
             b: Main.rnd(1),
             radius: Main.rnd(20) + 5,
-            x: Main.rnd(256) - 128,
-            y: Main.rnd(256) - 128,
-            z: Main.rnd(256) - 128,
+            x: Main.rnd(CPUraytracer.dim) - trunc(CPUraytracer.dim / 2),
+            y: Main.rnd(CPUraytracer.dim) - trunc(CPUraytracer.dim / 2),
+            z: Main.rnd(CPUraytracer.dim) - trunc(CPUraytracer.dim / 2),
         }]
     end
     def sphereMaker(n) do
@@ -140,9 +141,9 @@ defmodule Main do
             g: Main.rnd(1),
             b: Main.rnd(1),
             radius: Main.rnd(20) + 5,
-            x: Main.rnd(256) - 128,
-            y: Main.rnd(256) - 128,
-            z: Main.rnd(256) - 128,
+            x: Main.rnd(CPUraytracer.dim) - trunc(CPUraytracer.dim / 2),
+            y: Main.rnd(CPUraytracer.dim) - trunc(CPUraytracer.dim / 2),
+            z: Main.rnd(CPUraytracer.dim) - trunc(CPUraytracer.dim / 2),
         } | sphereMaker(n - 1)]
     end
 
@@ -151,17 +152,18 @@ defmodule Main do
     end
 
     def main do
-        sphereList = sphereMaker(20)
+        sphereList = sphereMaker(CPUraytracer.spheres)
+
+        
+        width = CPUraytracer.dim
+        height = width #square image
 
         prev = System.monotonic_time()
-        image = CPUraytracer.kernelLoop(sphereList, [], 1, 1)
+        image = CPUraytracer.kernelLoop(sphereList, [], 0, 0, width)
         next = System.monotonic_time()
         IO.puts("tempo: #{next - prev}")
         IO.inspect(image)
 
-
-        width = 256
-        height = 256
 
         widthInBytes = width * Bmpgen.bytes_per_pixel
 
@@ -171,10 +173,12 @@ defmodule Main do
         IO.puts("ray tracer completo, começando escrita")
         Bmpgen.writeFileHeader(height, stride)
         Bmpgen.writeInfoHeader(height, width)
-        #Bmpgen.recursiveWrite(image, 1, (CPUraytracer.dim + 1)* (CPUraytracer.dim + 1) * 4)
         Bmpgen.recursiveWrite(image)
         
+        {iteration, _} = Integer.parse(Enum.at(System.argv, 2))
+        text = "time: #{next - prev}, iteration: #{iteration}, dimension: #{height}x#{width}, spheres: #{CPUraytracer.spheres} \n"
 
+        File.write!("time-cpuraytracer.txt", text, [:append])
     end
 end
 
