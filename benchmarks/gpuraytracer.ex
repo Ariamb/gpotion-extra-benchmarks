@@ -184,9 +184,9 @@ defmodule Main do
         Bmpgen.recursiveWrite(image, 1, (width+1)* (height+1) * 4)
 
         {iteration, _} = Integer.parse(Enum.at(System.argv, 2))
-        text = "time: #{next - prev}, iteration: #{iteration}, dimension: #{height}x#{width}, spheres: #{CPUraytracer.spheres} \n"
+        text = "time: #{next - prev}, iteration: #{iteration}, dimension: #{height}x#{width}, spheres: #{Main.spheres} \n"
 
-        File.write!("time-cpuraytracer.txt", text, [:append])
+        File.write!("time-gpuraytracer.txt", text, [:append])
         
       
         
