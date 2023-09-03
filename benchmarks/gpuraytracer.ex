@@ -1,5 +1,3 @@
-import Random
-import Matrex
 import Bitwise
 
 Random.seed(313)
@@ -80,7 +78,7 @@ defmodule Bmpgen do
   def bytes_per_pixel do
     4
   end
-  def recursiveWrite(image, max, max) do
+  def recursiveWrite(_image, max, max) do
     IO.puts("done!")
   end
 
@@ -112,20 +110,20 @@ defmodule Main do
     
     def sphereMaker(spheres, max, max) do
       max = max - 1
-      Main.rnd(1)
-      Main.rnd(1)
-      Main.rnd(1)
-        Matrex.set(spheres, 1, max * 7 + 1, 1) 
-        |> Matrex.set( 1, max * 7 + 2, 0) #g
-        |> Matrex.set( 1, max * 7 + 3, 0) #b
+      #Main.rnd(1)
+      #Main.rnd(1)
+      #Main.rnd(1)
+        Matrex.set(spheres, 1, max * 7 + 1, Main.rnd(1)) 
+        |> Matrex.set( 1, max * 7 + 2, Main.rnd(1)) #g
+        |> Matrex.set( 1, max * 7 + 3, Main.rnd(1)) #b
         |> Matrex.set( 1, max * 7 + 4, Main.rnd(20) + 5) #radius
         |> Matrex.set( 1, max * 7 + 5, Main.rnd(256) - 128) #x
         |> Matrex.set( 1, max * 7 + 6, Main.rnd(256) - 128) #y
         |> Matrex.set( 1, max * 7 + 7, Main.rnd(256) - 128) #z
     end
     def sphereMaker(spheres, n, max) do
-      #n = n - 1
-      spheres  = Matrex.set(spheres, 1, n * 7 + 1, Main.rnd(1)) 
+      
+      Matrex.set(spheres, 1, n * 7 + 1, Main.rnd(1)) 
       |> Matrex.set( 1, (n - 1) * 7 + 2, Main.rnd(1)) #g
       |> Matrex.set( 1, (n - 1) * 7 + 3, Main.rnd(1)) #b
       |> Matrex.set( 1, (n - 1) * 7 + 4, Main.rnd(20) + 5) #radius
@@ -149,28 +147,24 @@ defmodule Main do
         sphereList = sphereMaker(sphereList, 1, Main.spheres)
 
         IO.inspect(sphereList)
-        kernel = GPotion.load(&RayTracer.raytracing/3)
+
         
         width = Main.dim
         height = Main.dim
 
-        refSphere = GPotion.new_gmatrex(sphereList)
         imageList = Matrex.zeros(1, (width + 1) * (height + 1) * 4)
-        IO.inspect(imageList[:size])
 
+        prev = System.monotonic_time()
+        kernel = GPotion.load(&RayTracer.raytracing/3)
+        
+        refSphere = GPotion.new_gmatrex(sphereList)
         refImag = GPotion.new_gmatrex(imageList)
-        IO.inspect(imageList)
-
-        #GPotion.spawn(kernel,{numberOfBlocks,1,1},{threadsPerBlock,1,1},[256, refSphere, refImag])
 
         GPotion.spawn(kernel,{trunc(width/16),trunc(height/16),1},{16,16,1},[width, refSphere, refImag])
         GPotion.synchronize()
         
         image = GPotion.get_gmatrex(refImag)
-        IO.inspect(image)
-        {a, b} =  image[:size]
-        IO.puts(Matrex.at(image, 1, trunc(b/2)))
-
+        next = System.monotonic_time()
 
         widthInBytes = width * Bmpgen.bytes_per_pixel
 
@@ -178,7 +172,6 @@ defmodule Main do
         stride = widthInBytes + paddingSize
 
         IO.puts("ray tracer completo, começando escrita")
-        IO.inspect(image[:size])
         Bmpgen.writeFileHeader(height, stride)
         Bmpgen.writeInfoHeader(height, width)
         Bmpgen.recursiveWrite(image, 1, (width+1)* (height+1) * 4)
@@ -187,10 +180,7 @@ defmodule Main do
         text = "time: #{next - prev}, iteration: #{iteration}, dimension: #{height}x#{width}, spheres: #{Main.spheres} \n"
 
         File.write!("time-gpuraytracer.txt", text, [:append])
-        
       
-        
-
     end
 end
 

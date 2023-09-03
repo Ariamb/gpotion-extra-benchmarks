@@ -50,7 +50,6 @@ list = [Enum.to_list(0..n-1)]
 vet1 = Matrex.new(list)
 vet2 = Matrex.new(list)
 
-kernel=GPotion.load(&DP.dot_product/5)
 
 threadsPerBlock = 256
 blocksPerGrid = div(n + threadsPerBlock - 1, threadsPerBlock)
@@ -60,6 +59,9 @@ vet3 = Matrex.ones(1,blocksPerGrid)
 
 prev = System.monotonic_time()
 
+kernel=GPotion.load(&DP.dot_product/5)
+
+
 ref1=GPotion.new_gmatrex(vet1)
 ref2=GPotion.new_gmatrex(vet2)
 ref3=GPotion.new_gmatrex(vet3)                                                                                                                                                                                                                                                                                 
@@ -68,10 +70,10 @@ ref3=GPotion.new_gmatrex(vet3)
 GPotion.spawn(kernel,{numberOfBlocks,1,1},{threadsPerBlock,1,1},[ref3, ref1,ref2,n])
 GPotion.synchronize()
 
-next = System.monotonic_time()
 #IO.puts "time gpu #{System.convert_time_unit(next-prev,:native,:millisecond)}"
 
 resultreal = GPotion.get_gmatrex(ref3)
+next = System.monotonic_time()
 s = Matrex.sum(resultreal)
 
 #next = System.monotonic_time()

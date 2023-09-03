@@ -100,7 +100,7 @@ defmodule Bmpgen do
   #def recursiveWrite([a | image], i, max) do
   def recursiveWrite([r, g, b, 255 | image]) do
     l = [<<trunc(r)>>, <<trunc(b)>>, <<trunc(g)>>, <<255>>]
-    File.write!("img-cpu-999.bmp", l, [:append])
+    File.write!("img-cpuraytracer-#{CPUraytracer.dim}.bmp", l, [:append])
     recursiveWrite(image)
     
 
@@ -110,12 +110,12 @@ defmodule Bmpgen do
     fileSize = Bmpgen.fileHeaderSize + Bmpgen.infoHeaderSize + (stride * height)    
     fileHeader = ['B'] ++ ['M'] ++ [<<fileSize>>] ++ [<<fileSize >>> 8>>] ++ [<<fileSize >>> 16>>] ++ [<<fileSize >>> 24>>] ++ List.duplicate(<<0>>, 4) ++ [<<Bmpgen.fileHeaderSize + Bmpgen.infoHeaderSize>>] ++ List.duplicate(<<0>>, 3)
     IO.puts("\n-----------------------\n")
-    File.write!("img-cpu-999.bmp", fileHeader)
+    File.write!("img-cpuraytracer-#{CPUraytracer.dim}.bmp", fileHeader)
   end
   def writeInfoHeader(height, width) do
     
     infoHeader = [<<Bmpgen.infoHeaderSize>>] ++ List.duplicate(<<0>>, 3) ++ [<<width>>, <<width >>> 8>>, <<width >>> 16>>, <<width >>> 24>>, <<height>>, <<height >>> 8>>, <<height >>> 16>>, <<height >>> 24>>, <<1>>, <<0>>, <<Bmpgen.bytes_per_pixel * 8>>] ++ List.duplicate(<<0>>, 25)
-    File.write!("img-cpu-999.bmp", infoHeader, [:append])
+    File.write!("img-cpuraytracer-#{CPUraytracer.dim}.bmp", infoHeader, [:append])
   end
 end
 

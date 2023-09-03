@@ -23,10 +23,12 @@ defmodule Utils do
 a = Matrex.ones(1, n)
 b = Matrex.ones(1, n)
 
-prev = System.monotonic_time()
 {a, b} = Utils.fill_array(a, b, 0, n)
-next = System.monotonic_time()
+
+prev = System.monotonic_time()
 c = Matrex.dot_nt(a, b)
+next = System.monotonic_time()
+
 IO.inspect(c)
 
 text = "time: #{next - prev}, iteration: #{iteration}, array size: #{n} \n"
