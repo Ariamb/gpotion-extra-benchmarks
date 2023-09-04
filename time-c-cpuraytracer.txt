@@ -1,2 +1,11 @@
 time: 256.000000 	 spheres 256 	 iteration 20.
 time: 256.000000 	 spheres 256 	 iteration 10.
+time: 1000.000000 	 spheres 1000 	 iteration 0.
+time: 1000.000000 	 spheres 1000 	 iteration 0.
+time: 1000.000000 	 spheres 1000 	 iteration 0.
+time: 1000.000000 	 spheres 1000 	 iteration 0.
+time: 1000.000000 	 spheres 1000 	 iteration 0.
+time: 1000.000000 	 spheres 1000 	 iteration 0.
+time: 1000.000000 	 spheres 1000 	 iteration 0.
+time: 1000.000000 	 spheres 1000 	 iteration 0.
+time: 1000.000000 	 spheres 1000 	 iteration 0.

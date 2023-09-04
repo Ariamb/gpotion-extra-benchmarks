@@ -13,7 +13,8 @@ for SIZE in 1000 100000 1000000; do
         echo $i
 
 	echo C GPU
-        ./c_implementations/craytracer $SIZE i
+        ./c_implementations/cdotproduct $SIZE i
+        #./c_implementations/craytracer $SIZE i
     sleep 0.2
     
     echo Elixir CPU
