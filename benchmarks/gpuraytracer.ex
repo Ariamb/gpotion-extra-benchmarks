@@ -63,8 +63,6 @@ gpotion raytracing(dim, spheres, image) do
   image[offset * 4 + 1] = g * 255
   image[offset * 4 + 2] = b * 255
   
-
-  
 end
 end
 
@@ -157,9 +155,6 @@ defmodule Main do
 
     def sphereMaker(spheres, max, max) do
       max = max - 1
-      #Main.rnd(1)
-      #Main.rnd(1)
-      #Main.rnd(1)
         Matrex.set(spheres, 1, max * 7 + 1, Main.rnd(1)) 
         |> Matrex.set( 1, max * 7 + 2, Main.rnd(1)) #g
         |> Matrex.set( 1, max * 7 + 3, Main.rnd(1)) #b
@@ -170,7 +165,7 @@ defmodule Main do
     end
     def sphereMaker(spheres, n, max) do
       
-      Matrex.set(spheres, 1, n * 7 + 1, Main.rnd(1)) 
+      Matrex.set(spheres, 1, n * 7 + 1, Main.rnd(1)) #r
       |> Matrex.set( 1, (n - 1) * 7 + 2, Main.rnd(1)) #g
       |> Matrex.set( 1, (n - 1) * 7 + 3, Main.rnd(1)) #b
       |> Matrex.set( 1, (n - 1) * 7 + 4, Main.rnd(20) + 5) #radius
@@ -190,15 +185,9 @@ defmodule Main do
     end
 
     def main do
-        #sphereList = Matrex.zeros(1, Main.spheres * 7)
-        #sphereList = sphereMaker(sphereList, 1, Main.spheres)
-        leticia = sphereMaker2(Main.spheres)
-        sphereList = Matrex.new([leticia])
+        sphereList = Matrex.new([sphereMaker2(Main.spheres)])
         spherePrinter(leticia)
 
-        IO.inspect(sphereList)
-
-        
         width = Main.dim
         height = Main.dim
 

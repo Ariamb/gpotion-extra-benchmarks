@@ -1,0 +1,1 @@
+time: 256.000000 	 spheres 256 	 iteration 20.

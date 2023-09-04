@@ -1,7 +1,5 @@
 #include <stdio.h>
 
-#define DIM 256
-
 #define rnd( x ) (x * rand() / RAND_MAX)
 #define INF     2e10f
 
@@ -19,6 +17,20 @@ void generateBitmapImage(unsigned char* image, int height, int width, char* imag
 unsigned char* createBitmapFileHeader(int height, int stride);
 unsigned char* createBitmapInfoHeader(int height, int width);
 
+
+void generateLog(double time, int spheres, int interation){
+  printf("Writting operation time to file.\n");
+  FILE *file;
+  char filename[] = "time-c-cpuraytracer.txt";
+
+  file = fopen(filename, "a");
+  fprintf(file, "time: %f \t spheres %d \t iteration %d.\n", time, spheres, interation);
+  fclose(file);
+  
+  printf("done.\n");
+
+
+}
 
 void generateBitmapImage (unsigned char* image, int height, int width, char* imageFileName){
     int widthInBytes = width * BYTES_PER_PIXEL;
@@ -169,9 +181,11 @@ __global__ void kernel(int dim,  unsigned char *ptr ) {
 
 
 
-int main( void ) {
+int main(int argc, char *argv[]){
+    int dim = atoi(argv[1]);
+    int sph = atoi(argv[1]);
+    int iteration = atoi(argv[2]);
 
-    //#unsigned char *image; //size: [height][width][BYTES_PER_PIXEL];
 
     // allocate memory on the GPU for the output bitmap
     unsigned char   *final_bitmap;
@@ -179,7 +193,7 @@ int main( void ) {
 
     cudaMalloc( (void**)&dev_bitmap, 256 * 256 * 4);
 
-    final_bitmap = (unsigned char*) malloc(DIM * DIM *4);
+    final_bitmap = (unsigned char*) malloc(dim * dim *4);
     // allocate temp memory, initialize it, copy to constant
     // memory on the GPU, then free our temp memory
     Sphere *temp_s = (Sphere*)malloc( sizeof(Sphere) * SPHERES );
@@ -368,17 +382,17 @@ int main( void ) {
     free( temp_s );
 
     // generate a bitmap from our sphere data
-    dim3    grids(DIM/16,DIM/16);
+    dim3    grids(dim/16,dim/16);
     dim3    threads(16,16);
 
     //dim3    grids(DIM,DIM);
     //dim3    threads(1,1);
 
 
-    kernel<<<grids,threads>>>( dev_bitmap );
+    kernel<<<grids,threads>>>(dim, dev_bitmap );
 
     // copy our bitmap back from the GPU for display
-    cudaMemcpy( final_bitmap, dev_bitmap, DIM * DIM * 4,cudaMemcpyDeviceToHost );
+    cudaMemcpy( final_bitmap, dev_bitmap, dim * dim * 4,cudaMemcpyDeviceToHost );
 
 
 
@@ -397,12 +411,6 @@ int main( void ) {
     int i, j;
     for (i = 0; i < height; i++) {
         for (j = 0; j < width; j++) {
-
-              //image[i][j][3] = (unsigned char) 255;                             ///alpha? 255
-              //image[i][j][2] = (unsigned char)  ( i * 255 / height );             ///red//blue
-              //image[i][j][1] = (unsigned char) ( j * 255 / width );              ///green//green
-              //image[i][j][0] = (unsigned char) ( (i+j) * 255 / (height+width) ); ///blue // final_bitmap[red]
-
             image[i][j][3] = (unsigned char) final_bitmap[(i * 256 + j) * 4 + 3] ;
             image[i][j][0] = (unsigned char) final_bitmap[(i * 256 + j) * 4 + 2] ;
             image[i][j][1] = (unsigned char) final_bitmap[(i * 256 + j) * 4 + 1] ;
@@ -413,6 +421,7 @@ int main( void ) {
     generateBitmapImage((unsigned char*) image, height, width, imageFileName);
     printf("Image generated!!");
 
+    generateLog(dim, sph, iteration);
     //no display, only write to file
     printf("final bmp! %d %d %d %d \n", final_bitmap[0], final_bitmap[1], final_bitmap[2], final_bitmap[3]);
     printf("final bmp! %d %d %d %d \n", final_bitmap[4], final_bitmap[5], final_bitmap[6], final_bitmap[7]);

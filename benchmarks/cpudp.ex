@@ -15,7 +15,6 @@ defmodule Utils do
   end
   
 
-#n = 33 * 1024
 {n, _} = Integer.parse(Enum.at(System.argv, 0))
 {iteration, _} = Integer.parse(Enum.at(System.argv, 1))
 

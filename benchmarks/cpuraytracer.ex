@@ -124,9 +124,6 @@ defmodule Main do
     end
     
     def sphereMaker(1) do
-        #Main.rnd(1)
-        #Main.rnd(1)
-        #Main.rnd(1)
         [%Sphere{
             r: Main.rnd(1),
             g: Main.rnd(1),
@@ -153,10 +150,14 @@ defmodule Main do
         File.write!("spherecpu.txt", "done\n", [:append])
         
       end
-      def spherePrinter([ sphere | list]) do
+      def spherePrinter([ sphere | list]) do #usar para transferir spheras entre códigos
         File.write!("spherecpu.txt", "\t r: #{sphere.r}", [:append])
         File.write!("spherecpu.txt", "\t g: #{sphere.g}", [:append])
         File.write!("spherecpu.txt", "\t b: #{sphere.b}", [:append])
+        File.write!("spherecpu.txt", "\t b: #{sphere.radius}", [:append])
+        File.write!("spherecpu.txt", "\t b: #{sphere.x}", [:append])
+        File.write!("spherecpu.txt", "\t b: #{sphere.y}", [:append])
+        File.write!("spherecpu.txt", "\t b: #{sphere.z}", [:append])
         File.write!("spherecpu.txt", "\n", [:append])
         spherePrinter(list)
       end
