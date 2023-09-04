@@ -73,12 +73,12 @@ GPotion.synchronize()
 #IO.puts "time gpu #{System.convert_time_unit(next-prev,:native,:millisecond)}"
 
 resultreal = GPotion.get_gmatrex(ref3)
-next = System.monotonic_time()
 s = Matrex.sum(resultreal)
+next = System.monotonic_time()
 
 #next = System.monotonic_time()
 
-text = "time: #{next - prev}, iteration: #{iteration}, array size: #{n} \n"
+text = "time: #{System.convert_time_unit(next - prev,:native,:millisecond)} \t iteration: #{iteration} \t array size: #{n} \n"
 File.write!("time-GPUDP.txt", text, [:append])
 
 #prev = System.monotonic_time()

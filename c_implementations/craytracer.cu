@@ -183,8 +183,8 @@ __global__ void kernel(int dim,  unsigned char *ptr ) {
 
 int main(int argc, char *argv[]){
     int dim = atoi(argv[1]);
-    int sph = atoi(argv[1]);
-    int iteration = atoi(argv[2]);
+    int sph = atoi(argv[2]);
+    int iteration = atoi(argv[3]);
 
 
     // allocate memory on the GPU for the output bitmap

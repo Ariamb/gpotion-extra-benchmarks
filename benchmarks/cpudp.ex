@@ -30,7 +30,7 @@ next = System.monotonic_time()
 
 IO.inspect(c)
 
-text = "time: #{next - prev}, iteration: #{iteration}, array size: #{n} \n"
+text = "time: #{System.convert_time_unit(next - prev,:native,:millisecond)} \t iteration: #{iteration} \t array size: #{n} \n"
 File.write!("time-cpudp.txt", text, [:append])
 
 

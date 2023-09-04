@@ -1,12 +1,27 @@
 #include <stdio.h>
+#include <time.h>
+
 #define imin(a,b) (a<b?a:b)
 
-const int N = 33 * 1024;
 const int threadsPerBlock = 256;
-const int blocksPerGrid = imin(32, (N+threadsPerBlock-1) / threadsPerBlock);
 
 
-__global__ void dot(float* a, float* b, float* c) {
+void generateLog(double time, int iteration, int n){
+  printf("Writting operation time to file.\n");
+  FILE *file;
+  char filename[] = "time-c-cpudotproduct.txt";
+
+  file = fopen(filename, "a");
+  fprintf(file, "time: %f \t iteration: %d \t array size: %d \n", time, iteration, n);
+  fclose(file);
+  
+  printf("done.\n");
+
+
+}
+
+
+__global__ void dot(float* a, float* b, float* c, int N) {
 	__shared__ float cache[threadsPerBlock];
 	int tid = threadIdx.x + blockIdx.x * blockDim.x;
 	int cacheIndex = threadIdx.x;
@@ -38,9 +53,16 @@ __global__ void dot(float* a, float* b, float* c) {
 		c[blockIdx.x] = cache[0];
 }
 
-int main (void) {
+int main (int argc, char *argv[]) {
+	clock_t start_time, end_time;
+    double cpu_time_used;
 	float *a, *b, c, *partial_c;
 	float *dev_a, *dev_b, *dev_partial_c;
+	
+	int N = atoi(argv[1]);
+    int iteration = atoi(argv[2]);
+
+	int blocksPerGrid = imin(32, (N+threadsPerBlock-1) / threadsPerBlock);
 
 	// allocate memory on the cpu side
 	a = (float*)malloc(N*sizeof(float));
@@ -48,23 +70,23 @@ int main (void) {
 	//sqr = (float*)malloc(N*sizeof(float));
 	partial_c = (float*)malloc(blocksPerGrid*sizeof(float));
 
-	// allocate the memory on the gpu
-	cudaMalloc((void**)&dev_a, N*sizeof(float));
-	cudaMalloc((void**)&dev_b, N*sizeof(float));
-	cudaMalloc((void**)&dev_partial_c, blocksPerGrid*sizeof(float));
-
-	// fill in the host mempory with data
 	for(int i=0; i<N; i++) {
 		a[i] = i;
 		b[i] = i;
 	}
 
+	// allocate the memory on the gpu
+		start_time = clock();
+
+	cudaMalloc((void**)&dev_a, N*sizeof(float));
+	cudaMalloc((void**)&dev_b, N*sizeof(float));
+	cudaMalloc((void**)&dev_partial_c, blocksPerGrid*sizeof(float));
 
 	// copy the arrays 'a' and 'b' to the gpu
 	cudaMemcpy(dev_a, a, N*sizeof(float), cudaMemcpyHostToDevice);
 	cudaMemcpy(dev_b, b, N*sizeof(float), cudaMemcpyHostToDevice);
 
-	dot<<<blocksPerGrid, threadsPerBlock>>>(dev_a, dev_b, dev_partial_c);
+	dot<<<blocksPerGrid, threadsPerBlock>>>(dev_a, dev_b, dev_partial_c, N);
 
 	// copy the array 'c' back from the gpu to the cpu
 	cudaMemcpy(partial_c,dev_partial_c, blocksPerGrid*sizeof(float), cudaMemcpyDeviceToHost);
@@ -74,18 +96,20 @@ int main (void) {
 	for(int i=0; i<blocksPerGrid; i++) {
 		c += partial_c[i];
 	}
-    printf("%f \n", c);
 
 	// free memory on the gpu side
 	cudaFree(dev_a);
 	cudaFree(dev_b);
 	cudaFree(dev_partial_c);
+    end_time = clock();
 
 	// free memory on the cpu side
 	// valor real, real, tri real da sum of squares 12861782365696
 	free(a);
 	free(b);
 	free(partial_c);
+    cpu_time_used = ((double) (end_time - start_time)) / CLOCKS_PER_SEC;
+	generateLog(cpu_time_used, iteration, N);
 
 
 }
