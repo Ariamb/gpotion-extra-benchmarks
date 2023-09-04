@@ -126,9 +126,8 @@ struct Sphere {
 #define SPHERES 20
 __constant__ Sphere s[SPHERES];
 
-__global__ void kernel(int dim,  unsigned char *ptr ) {
-    // map from threadIdx/BlockIdx to pixel position
-    int x = threadIdx.x + blockIdx.x * blockDim.x;
+__global__ void kernel(int dim, unsigned char *ptr ) {
+	int x = threadIdx.x + blockIdx.x * blockDim.x;
     int y = threadIdx.y + blockIdx.y * blockDim.y;
     int offset = x + y * blockDim.x * gridDim.x;
     float   ox = (x - dim/2);
@@ -136,7 +135,8 @@ __global__ void kernel(int dim,  unsigned char *ptr ) {
 
     float   r=0, g=0, b=0;
     float   maxz = -99999;
-    for(int i=0; i<SPHERES; i++) {
+
+    for(int i=0; i<20; i++) {
         float   n;
         float   t = -99999;
         float dx = ox - s[i].x;
@@ -160,12 +160,19 @@ __global__ void kernel(int dim,  unsigned char *ptr ) {
 
     }
 
-    ptr[offset*4 + 0] = (r * 255);
-    ptr[offset*4 + 1] = (g * 255);
-    ptr[offset*4 + 2] = (b * 255);
-    ptr[offset*4 + 3] = 255;
+    //diferença disso:
+    //ptr[offset * 4 + 0] = (r * 255);
+    //ptr[offset * 4 + 1] = (g * 255);
+    //ptr[offset * 4 + 2] = (b * 255);
+    //ptr[offset * 4 + 3] = 255;
+	
+    //pra isso:
+	ptr[offset * 4 + 0] = (r * 255);
+	ptr[offset * 4 + 1] = (g * 255);
+	ptr[offset * 4 + 2] = (b * 255);
+    ptr[offset * 4 + 3] = 255;
+    
 }
-
 
 
 
@@ -374,8 +381,7 @@ int main( void ) {
     //dim3    grids(DIM,DIM);
     //dim3    threads(1,1);
 
-
-    kernel<<<grids,threads>>>( dev_bitmap );
+    kernel<<<grids,threads>>>(256, dev_bitmap );
 
     // copy our bitmap back from the GPU for display
     cudaMemcpy( final_bitmap, dev_bitmap, DIM * DIM * 4,cudaMemcpyDeviceToHost );
@@ -392,7 +398,7 @@ int main( void ) {
     int height = 256;
     int width = 256;
     unsigned char image[height][width][BYTES_PER_PIXEL];
-    char* imageFileName = (char*) "bitmapImage.bmp";
+    char* imageFileName = (char*) "img-craytracer-sanity.bmp";
 
     int i, j;
     for (i = 0; i < height; i++) {

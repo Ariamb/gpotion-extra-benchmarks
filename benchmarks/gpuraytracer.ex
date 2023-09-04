@@ -13,6 +13,8 @@ gpotion raytracing(dim, spheres, image) do
   y = threadIdx.y + blockIdx.y * blockDim.y
   offset = x + y * blockDim.x * gridDim.x
   #testando se poderiam ser os comments
+  ox = 0.0
+  oy = 0.0
   ox = (x - dim/2)
   oy = (y - dim/2)
 
@@ -35,7 +37,7 @@ gpotion raytracing(dim, spheres, image) do
     dx = ox - sphereX
     dy = oy - sphereY
     n = 0.0
-    t = 0.0
+    t = -99999.0
     dz = 0.0
     if (dx * dx + dy * dy) <  (sphereRadius * sphereRadius) do
       dz = sqrtf(sphereRadius * sphereRadius - (dx * dx) - (dy * dy))
@@ -48,18 +50,19 @@ gpotion raytracing(dim, spheres, image) do
 
     if t > maxz do
       fscale = n
-      r = sphereR * fscale
-      g = sphereG * fscale
-      b = sphereB * fscale
+      r = spheres[i * 7 + 0] * fscale
+      g = spheres[i * 7 + 1] * fscale
+      b = spheres[i * 7 + 2] * fscale
       maxz = t
     end
     
     
   end
-  image[offset * 4 + 0] = r * 255 
-  image[offset * 4 + 1] = b * 255
-  image[offset * 4 + 2] = g * 255
   image[offset * 4 + 3] = 255
+  image[offset * 4 + 0] = r * 255 
+  image[offset * 4 + 1] = g * 255
+  image[offset * 4 + 2] = b * 255
+  
 
   
 end
@@ -78,16 +81,18 @@ defmodule Bmpgen do
   def bytes_per_pixel do
     4
   end
-  def recursiveWrite(_image, max, max) do
-    IO.puts("done!")
+  def recursiveWrite([]) do
+    IO.puts("done opening!")
   end
 
-  def recursiveWrite(image, i, max) do
-    x = trunc(Matrex.at(image, 1, i))
-    File.write!("img-gpuraytracer-#{Main.dim}.bmp", <<x>>, [:append])
-    recursiveWrite(image, i+1, max)
-  end
+  #def recursiveWrite([a | image], i, max) do
+  def recursiveWrite([r, g, b, 255.0 | image]) do
+    l = [<<trunc(g)>>, <<trunc(b)>>, <<trunc(r)>>, <<255>>]
+    File.write!("img-gpuraytracer-#{Main.dim}.bmp", l, [:append])
+    recursiveWrite(image)
 
+
+  end
   def writeFileHeader(height, stride) do
     fileSize = Bmpgen.fileHeaderSize + Bmpgen.infoHeaderSize + (stride * height)    
     fileHeader = ['B'] ++ ['M'] ++ [<<fileSize>>] ++ [<<fileSize >>> 8>>] ++ [<<fileSize >>> 16>>] ++ [<<fileSize >>> 24>>] ++ List.duplicate(<<0>>, 4) ++ [<<Bmpgen.fileHeaderSize + Bmpgen.infoHeaderSize>>] ++ List.duplicate(<<0>>, 3)
@@ -108,6 +113,48 @@ defmodule Main do
         x * Random.randint(1, 32767) / 32767
     end
     
+
+    def sphereMaker2(1) do
+
+          x = [
+          Main.rnd(1),
+          Main.rnd(1),
+          Main.rnd(1),
+          Main.rnd(20) + 5,
+          Main.rnd(Main.dim) - trunc(Main.dim / 2),
+          Main.rnd(Main.dim) - trunc(Main.dim / 2),
+          Main.rnd(Main.dim) - trunc(Main.dim / 2)]
+          IO.puts("sphere at 1 \n")
+          IO.inspect(x)
+          x
+    end
+    def sphereMaker2(n) do
+      x = [
+          Main.rnd(1),
+          Main.rnd(1),
+          Main.rnd(1),
+          Main.rnd(20) + 5,
+          Main.rnd(Main.dim) - trunc(Main.dim / 2),
+          Main.rnd(Main.dim) - trunc(Main.dim / 2),
+          Main.rnd(Main.dim) - trunc(Main.dim / 2)
+      | sphereMaker2(n - 1)]
+      IO.puts("sphere at #{n} \n")
+      IO.inspect(x)
+    end
+
+    def spherePrinter([]) do
+      File.write!("spheregpu.txt", "done\n", [:append])
+      
+    end
+    def spherePrinter([ r, g, b, _radius, _x, _y, _z | list]) do
+      File.write!("spheregpu.txt", "\t r: #{r}", [:append])
+      File.write!("spheregpu.txt", "\t g: #{g}", [:append])
+      File.write!("spheregpu.txt", "\t b: #{b}", [:append])
+      File.write!("spheregpu.txt", "\n", [:append])
+      spherePrinter(list)
+    end
+
+
     def sphereMaker(spheres, max, max) do
       max = max - 1
       #Main.rnd(1)
@@ -117,9 +164,9 @@ defmodule Main do
         |> Matrex.set( 1, max * 7 + 2, Main.rnd(1)) #g
         |> Matrex.set( 1, max * 7 + 3, Main.rnd(1)) #b
         |> Matrex.set( 1, max * 7 + 4, Main.rnd(20) + 5) #radius
-        |> Matrex.set( 1, max * 7 + 5, Main.rnd(256) - 128) #x
-        |> Matrex.set( 1, max * 7 + 6, Main.rnd(256) - 128) #y
-        |> Matrex.set( 1, max * 7 + 7, Main.rnd(256) - 128) #z
+        |> Matrex.set( 1, max * 7 + 5, Main.rnd(Main.dim) - Main.dim/2) #x
+        |> Matrex.set( 1, max * 7 + 6, Main.rnd(Main.dim) - Main.dim/2) #y
+        |> Matrex.set( 1, max * 7 + 7, Main.rnd(Main.dim) - Main.dim/2) #z
     end
     def sphereMaker(spheres, n, max) do
       
@@ -127,9 +174,9 @@ defmodule Main do
       |> Matrex.set( 1, (n - 1) * 7 + 2, Main.rnd(1)) #g
       |> Matrex.set( 1, (n - 1) * 7 + 3, Main.rnd(1)) #b
       |> Matrex.set( 1, (n - 1) * 7 + 4, Main.rnd(20) + 5) #radius
-      |> Matrex.set( 1, (n - 1) * 7 + 5, Main.rnd(256) - 128) #x
-      |> Matrex.set( 1, (n - 1) * 7 + 6, Main.rnd(256) - 128) #y
-      |> Matrex.set( 1, (n - 1) * 7 + 7, Main.rnd(256) - 128) #z
+      |> Matrex.set( 1, (n - 1) * 7 + 5, Main.rnd(Main.dim) - Main.dim/2) #x
+      |> Matrex.set( 1, (n - 1) * 7 + 6, Main.rnd(Main.dim) - Main.dim/2) #y
+      |> Matrex.set( 1, (n - 1) * 7 + 7, Main.rnd(Main.dim) - Main.dim/2) #z
       |> sphereMaker(n + 1, max)
     end
 
@@ -143,8 +190,11 @@ defmodule Main do
     end
 
     def main do
-        sphereList = Matrex.zeros(1, Main.spheres * 7)
-        sphereList = sphereMaker(sphereList, 1, Main.spheres)
+        #sphereList = Matrex.zeros(1, Main.spheres * 7)
+        #sphereList = sphereMaker(sphereList, 1, Main.spheres)
+        leticia = sphereMaker2(Main.spheres)
+        sphereList = Matrex.new([leticia])
+        spherePrinter(leticia)
 
         IO.inspect(sphereList)
 
@@ -152,7 +202,7 @@ defmodule Main do
         width = Main.dim
         height = Main.dim
 
-        imageList = Matrex.zeros(1, (width + 1) * (height + 1) * 4)
+        imageList = Matrex.zeros(1, (width) * (height) * 4)
 
         prev = System.monotonic_time()
         kernel = GPotion.load(&RayTracer.raytracing/3)
@@ -166,7 +216,15 @@ defmodule Main do
         image = GPotion.get_gmatrex(refImag)
         next = System.monotonic_time()
 
+
+
+        #------------------file writting----------------------------#
+        image = Matrex.to_list(image)
+        IO.inspect(image)
+        IO.inspect(length(image))
+
         widthInBytes = width * Bmpgen.bytes_per_pixel
+
 
         paddingSize = rem((4 - rem(widthInBytes, 4)), 4)
         stride = widthInBytes + paddingSize
@@ -174,8 +232,9 @@ defmodule Main do
         IO.puts("ray tracer completo, começando escrita")
         Bmpgen.writeFileHeader(height, stride)
         Bmpgen.writeInfoHeader(height, width)
-        Bmpgen.recursiveWrite(image, 1, (width+1)* (height+1) * 4)
+        Bmpgen.recursiveWrite(image)
 
+        #-----------------logging times-----------------------------#
         {iteration, _} = Integer.parse(Enum.at(System.argv, 2))
         text = "time: #{next - prev}, iteration: #{iteration}, dimension: #{height}x#{width}, spheres: #{Main.spheres} \n"
 

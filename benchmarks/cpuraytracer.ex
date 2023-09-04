@@ -92,14 +92,13 @@ defmodule Bmpgen do
   def bytes_per_pixel do
     4
   end
-  #def recursiveWrite(something, max, max) do
   def recursiveWrite([]) do
     IO.puts("done opening!")
   end
 
   #def recursiveWrite([a | image], i, max) do
   def recursiveWrite([r, g, b, 255 | image]) do
-    l = [<<trunc(r)>>, <<trunc(b)>>, <<trunc(g)>>, <<255>>]
+    l = [<<trunc(g)>>, <<trunc(b)>>, <<trunc(r)>>, <<255>>]
     File.write!("img-cpuraytracer-#{CPUraytracer.dim}.bmp", l, [:append])
     recursiveWrite(image)
     
@@ -125,6 +124,9 @@ defmodule Main do
     end
     
     def sphereMaker(1) do
+        #Main.rnd(1)
+        #Main.rnd(1)
+        #Main.rnd(1)
         [%Sphere{
             r: Main.rnd(1),
             g: Main.rnd(1),
@@ -147,13 +149,22 @@ defmodule Main do
         } | sphereMaker(n - 1)]
     end
 
-    def all do
+    def spherePrinter([]) do
+        File.write!("spherecpu.txt", "done\n", [:append])
         
-    end
+      end
+      def spherePrinter([ sphere | list]) do
+        File.write!("spherecpu.txt", "\t r: #{sphere.r}", [:append])
+        File.write!("spherecpu.txt", "\t g: #{sphere.g}", [:append])
+        File.write!("spherecpu.txt", "\t b: #{sphere.b}", [:append])
+        File.write!("spherecpu.txt", "\n", [:append])
+        spherePrinter(list)
+      end
+  
 
     def main do
         sphereList = sphereMaker(CPUraytracer.spheres)
-
+        spherePrinter(sphereList)
         
         width = CPUraytracer.dim
         height = width #square image

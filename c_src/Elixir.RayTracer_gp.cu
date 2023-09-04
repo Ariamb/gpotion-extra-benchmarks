@@ -6,8 +6,10 @@ void raytracing(int dim, float *spheres, float *image)
 	int x = (threadIdx.x + (blockIdx.x * blockDim.x));
 	int y = (threadIdx.y + (blockIdx.y * blockDim.y));
 	int offset = (x + ((y * blockDim.x) * gridDim.x));
-	int ox = (x - (dim / 2));
-	int oy = (y - (dim / 2));
+	float ox = 0.0;
+	float oy = 0.0;
+	ox = (x - (dim / 2));
+	oy = (y - (dim / 2));
 	float r = 0.0;
 	float g = 0.0;
 	float b = 0.0;
@@ -23,7 +25,7 @@ for( int i = 0; i<20; i++){
 	float dx = (ox - sphereX);
 	float dy = (oy - sphereY);
 	float n = 0.0;
-	float t = 0.0;
+	float t = (- 99999.0);
 	float dz = 0.0;
 if((((dx * dx) + (dy * dy)) < (sphereRadius * sphereRadius)))
 {
@@ -39,18 +41,18 @@ else{
 if((t > maxz))
 {
 	float fscale = n;
-	r = (sphereR * fscale);
-	g = (sphereG * fscale);
-	b = (sphereB * fscale);
+	r = (spheres[((i * 7) + 0)] * fscale);
+	g = (spheres[((i * 7) + 1)] * fscale);
+	b = (spheres[((i * 7) + 2)] * fscale);
 	maxz = t;
 }
 
 }
 
-	image[((offset * 4) + 0)] = (r * 255);
-	image[((offset * 4) + 1)] = (b * 255);
-	image[((offset * 4) + 2)] = (g * 255);
 	image[((offset * 4) + 3)] = 255;
+	image[((offset * 4) + 0)] = (r * 255);
+	image[((offset * 4) + 1)] = (g * 255);
+	image[((offset * 4) + 2)] = (b * 255);
 }
 
 extern "C" void raytracing_call(ErlNifEnv *env, const ERL_NIF_TERM argv[], ErlNifResourceType* type)

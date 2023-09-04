@@ -7,4 +7,4 @@ mix run benchmarks/cpudp.ex 33792 1
 
 
 nvcc -o c_implementations/craytracer c_implementations/craytracer.cu
-./c_implementations/
+./c_implementations/craytracer

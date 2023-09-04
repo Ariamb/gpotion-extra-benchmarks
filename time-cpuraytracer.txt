@@ -1,1 +1,10 @@
 time: 77392301, iteration: 1, dimension: 256x256, spheres: 10 
+time: 132848131, iteration: 1, dimension: 256x256, spheres: 20 
+time: 133489702, iteration: 1, dimension: 256x256, spheres: 20 
+time: 126702950, iteration: 1, dimension: 256x256, spheres: 20 
+time: 148468673, iteration: 1, dimension: 256x256, spheres: 20 
+time: 128886209, iteration: 1, dimension: 256x256, spheres: 20 
+time: 126086278, iteration: 1, dimension: 256x256, spheres: 20 
+time: 132384147, iteration: 1, dimension: 256x256, spheres: 20 
+time: 133293380, iteration: 1, dimension: 256x256, spheres: 20 
+time: 124808043, iteration: 1, dimension: 256x256, spheres: 20 
