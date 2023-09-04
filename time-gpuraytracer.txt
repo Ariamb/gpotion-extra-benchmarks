@@ -34,3 +34,8 @@ time: 93486889, iteration: 1, dimension: 256x256, spheres: 20
 time: 106027431, iteration: 1, dimension: 256x256, spheres: 20 
 time: 68703985, iteration: 1, dimension: 256x256, spheres: 20 
 time: 74957299, iteration: 1, dimension: 256x256, spheres: 20 
+time: 102294746, iteration: 20, dimension: 256x256, spheres: 20 
+time: 57533850, iteration: 20, dimension: 256x256, spheres: 20 
+time: 52260743, iteration: 20, dimension: 256x256, spheres: 20 
+time: 58587731, iteration: 20, dimension: 600x800, spheres: 20 
+time: 54184615, iteration: 20, dimension: 800x800, spheres: 20 

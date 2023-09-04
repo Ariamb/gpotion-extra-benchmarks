@@ -1,29 +1,23 @@
 #include "erl_nif.h"
 
 __global__
-void raytracing(int dim, float *spheres, float *image)
+void raytracing(int width, int height, float *spheres, float *image)
 {
 	int x = (threadIdx.x + (blockIdx.x * blockDim.x));
 	int y = (threadIdx.y + (blockIdx.y * blockDim.y));
 	int offset = (x + ((y * blockDim.x) * gridDim.x));
 	float ox = 0.0;
 	float oy = 0.0;
-	ox = (x - (dim / 2));
-	oy = (y - (dim / 2));
+	ox = (x - (width / 2));
+	oy = (y - (height / 2));
 	float r = 0.0;
 	float g = 0.0;
 	float b = 0.0;
 	float maxz = (- 99999.0);
 for( int i = 0; i<20; i++){
-	float sphereR = spheres[((i * 7) + 0)];
-	float sphereG = spheres[((i * 7) + 1)];
-	float sphereB = spheres[((i * 7) + 2)];
 	float sphereRadius = spheres[((i * 7) + 3)];
-	float sphereX = spheres[((i * 7) + 4)];
-	float sphereY = spheres[((i * 7) + 5)];
-	float sphereZ = spheres[((i * 7) + 6)];
-	float dx = (ox - sphereX);
-	float dy = (oy - sphereY);
+	float dx = (ox - spheres[((i * 7) + 4)]);
+	float dy = (oy - spheres[((i * 7) + 5)]);
 	float n = 0.0;
 	float t = (- 99999.0);
 	float dz = 0.0;
@@ -31,7 +25,7 @@ if((((dx * dx) + (dy * dy)) < (sphereRadius * sphereRadius)))
 {
 	dz = sqrtf((((sphereRadius * sphereRadius) - (dx * dx)) - (dy * dy)));
 	n = (dz / sqrtf((sphereRadius * sphereRadius)));
-	t = (dz + sphereZ);
+	t = (dz + spheres[((i * 7) + 6)]);
 }
 else{
 	t = (- 99999.0);
@@ -49,10 +43,10 @@ if((t > maxz))
 
 }
 
-	image[((offset * 4) + 3)] = 255;
 	image[((offset * 4) + 0)] = (r * 255);
 	image[((offset * 4) + 1)] = (g * 255);
 	image[((offset * 4) + 2)] = (b * 255);
+	image[((offset * 4) + 3)] = 255;
 }
 
 extern "C" void raytracing_call(ErlNifEnv *env, const ERL_NIF_TERM argv[], ErlNifResourceType* type)
@@ -94,8 +88,8 @@ extern "C" void raytracing_call(ErlNifEnv *env, const ERL_NIF_TERM argv[], ErlNi
   list = tail;
 
   enif_get_list_cell(env,list,&head,&tail);
-  enif_get_resource(env, head, type, (void **) &array_res);
-  float *arg2 = *array_res;
+  int arg2;
+  enif_get_int(env, head, &arg2);
   list = tail;
 
   enif_get_list_cell(env,list,&head,&tail);
@@ -103,7 +97,12 @@ extern "C" void raytracing_call(ErlNifEnv *env, const ERL_NIF_TERM argv[], ErlNi
   float *arg3 = *array_res;
   list = tail;
 
-   raytracing<<<blocks, threads>>>(arg1,arg2,arg3);
+  enif_get_list_cell(env,list,&head,&tail);
+  enif_get_resource(env, head, type, (void **) &array_res);
+  float *arg4 = *array_res;
+  list = tail;
+
+   raytracing<<<blocks, threads>>>(arg1,arg2,arg3,arg4);
     cudaError_t error_gpu = cudaGetLastError();
     if(error_gpu != cudaSuccess)
      { char message[200];

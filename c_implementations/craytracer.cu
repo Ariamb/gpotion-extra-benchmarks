@@ -197,6 +197,25 @@ int main(int argc, char *argv[]){
     // allocate temp memory, initialize it, copy to constant
     // memory on the GPU, then free our temp memory
     Sphere *temp_s = (Sphere*)malloc( sizeof(Sphere) * SPHERES );
+
+    for (int i=0; i<SPHERES; i++) {
+        temp_s[i].r = rnd( 1.0f );
+        temp_s[i].g = rnd( 1.0f );
+        temp_s[i].b = rnd( 1.0f );
+        temp_s[i].x = rnd( 256.0f ) - 128;
+        temp_s[i].y = rnd( 256.0f ) - 128;
+        temp_s[i].z = rnd( 256.0f ) - 128;
+        temp_s[i].radius = rnd( 20.0f ) + 5;
+        printf("sphere{\n");
+        printf("r: %f \n", temp_s[i].r);
+        printf("g: %f \n", temp_s[i].g);
+        printf("b: %f \n", temp_s[i].b);
+        printf("radius: %f \n", temp_s[i].radius);
+        printf("x: %f \n", temp_s[i].x);
+        printf("y: %f \n", temp_s[i].y);
+        printf("z: %f \n", temp_s[i].z);
+    }
+    /*
     temp_s[0] = {0.5647144993438521,
     0.17026276436658833,
     0.2513199255348369,
@@ -376,7 +395,7 @@ int main(int argc, char *argv[]){
     62.71675771355328,
     -123.35142063661611
   };
-
+//*/
 
     cudaMemcpyToSymbol( s, temp_s, sizeof(Sphere) * SPHERES);
     free( temp_s );

@@ -3,10 +3,10 @@ import Bitwise
 
 Random.seed(313)
 defmodule CPUraytracer do
-    def kernel(spheres, image, {x, y}, dim) do
+    def kernel(spheres, image, {x, y}, dimx, dimy) do
 
-        ox = x - dim / 2
-        oy = y - dim / 2
+        ox = x - dimx / 2
+        oy = y - dimy / 2
         {r, g, b} = loopSpheres(spheres, {0, 0, 0}, {ox, oy}, CPUraytracer.minusinf)
         [r, g, b, 255 | image]
     end
@@ -56,12 +56,16 @@ defmodule CPUraytracer do
         end
     end
     
-    def dim do
+    def dimx do
         {d, _} = Integer.parse(Enum.at(System.argv, 0))
         d
     end
+    def dimy do
+        {d, _} = Integer.parse(Enum.at(System.argv, 1))
+        d
+    end
     def spheres do
-        {s, _} = Integer.parse(Enum.at(System.argv, 1))
+        {s, _} = Integer.parse(Enum.at(System.argv, 2))
         s
     end
     def minusinf do
@@ -99,7 +103,7 @@ defmodule Bmpgen do
   #def recursiveWrite([a | image], i, max) do
   def recursiveWrite([r, g, b, 255 | image]) do
     l = [<<trunc(g)>>, <<trunc(b)>>, <<trunc(r)>>, <<255>>]
-    File.write!("img-cpuraytracer-#{CPUraytracer.dim}.bmp", l, [:append])
+    File.write!("img-cpuraytracer-#{CPUraytracer.dimx}x#{CPUraytracer.dimy}.bmp", l, [:append])
     recursiveWrite(image)
     
 
@@ -109,12 +113,12 @@ defmodule Bmpgen do
     fileSize = Bmpgen.fileHeaderSize + Bmpgen.infoHeaderSize + (stride * height)    
     fileHeader = ['B'] ++ ['M'] ++ [<<fileSize>>] ++ [<<fileSize >>> 8>>] ++ [<<fileSize >>> 16>>] ++ [<<fileSize >>> 24>>] ++ List.duplicate(<<0>>, 4) ++ [<<Bmpgen.fileHeaderSize + Bmpgen.infoHeaderSize>>] ++ List.duplicate(<<0>>, 3)
     IO.puts("\n-----------------------\n")
-    File.write!("img-cpuraytracer-#{CPUraytracer.dim}.bmp", fileHeader)
+    File.write!("img-cpuraytracer-#{CPUraytracer.dimx}x#{CPUraytracer.dimy}.bmp", fileHeader)
   end
   def writeInfoHeader(height, width) do
     
     infoHeader = [<<Bmpgen.infoHeaderSize>>] ++ List.duplicate(<<0>>, 3) ++ [<<width>>, <<width >>> 8>>, <<width >>> 16>>, <<width >>> 24>>, <<height>>, <<height >>> 8>>, <<height >>> 16>>, <<height >>> 24>>, <<1>>, <<0>>, <<Bmpgen.bytes_per_pixel * 8>>] ++ List.duplicate(<<0>>, 25)
-    File.write!("img-cpuraytracer-#{CPUraytracer.dim}.bmp", infoHeader, [:append])
+    File.write!("img-cpuraytracer-#{CPUraytracer.dimx}x#{CPUraytracer.dimy}.bmp", infoHeader, [:append])
   end
 end
 
@@ -129,9 +133,9 @@ defmodule Main do
             g: Main.rnd(1),
             b: Main.rnd(1),
             radius: Main.rnd(20) + 5,
-            x: Main.rnd(CPUraytracer.dim) - trunc(CPUraytracer.dim / 2),
-            y: Main.rnd(CPUraytracer.dim) - trunc(CPUraytracer.dim / 2),
-            z: Main.rnd(CPUraytracer.dim) - trunc(CPUraytracer.dim / 2),
+            x: Main.rnd(CPUraytracer.dimx) - trunc(CPUraytracer.dimx / 2),
+            y: Main.rnd(CPUraytracer.dimy) - trunc(CPUraytracer.dimy / 2),
+            z: Main.rnd(256) - 128, #hardcoded
         }]
     end
     def sphereMaker(n) do
@@ -140,9 +144,9 @@ defmodule Main do
             g: Main.rnd(1),
             b: Main.rnd(1),
             radius: Main.rnd(20) + 5,
-            x: Main.rnd(CPUraytracer.dim) - trunc(CPUraytracer.dim / 2),
-            y: Main.rnd(CPUraytracer.dim) - trunc(CPUraytracer.dim / 2),
-            z: Main.rnd(CPUraytracer.dim) - trunc(CPUraytracer.dim / 2),
+            x: Main.rnd(CPUraytracer.dimx) - trunc(CPUraytracer.dimx / 2),
+            y: Main.rnd(CPUraytracer.dimy) - trunc(CPUraytracer.dimy / 2),
+            z: Main.rnd(256) - 128, #hardcoded
         } | sphereMaker(n - 1)]
     end
 
@@ -167,8 +171,8 @@ defmodule Main do
         sphereList = sphereMaker(CPUraytracer.spheres)
         spherePrinter(sphereList)
         
-        width = CPUraytracer.dim
-        height = width #square image
+        width = CPUraytracer.dimx
+        height = CPUraytracer.dimy 
 
         prev = System.monotonic_time()
         image = CPUraytracer.kernelLoop(sphereList, [], 0, 0, width)
