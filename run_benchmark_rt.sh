@@ -3,27 +3,27 @@
 N=30
 
 # Compiling files
-sh compile.sh
+#sh compile.sh
 
 
-for SIZE in 1000 100000 1000000 10000000 100000000; do
+for SIZE in 256 1024 3096; do
     echo $SIZE
 
     for i in $(seq 1 $N); do
         echo $i
-    sleep 1
+    #sleep 1
 
 	echo C GPU
-        ./c_implementations/cdotproduct $SIZE $i
-        #./c_implementations/craytracer $SIZE $i
+        ./c_implementations/craytracer $SIZE $i
     sleep 0.2
     
     echo Elixir CPU
-        mix run benchmarks/cpudp.ex $SIZE $i
+        mix run benchmarks/cpuraytracer.ex $SIZE $i
     sleep 0.2
 
+
     echo Elixir GPU
-        mix run benchmarks/gpudp.ex $SIZE $i
+        mix run benchmarks/gpuraytracer.ex $SIZE $i
     done
     sleep 0.2
 done

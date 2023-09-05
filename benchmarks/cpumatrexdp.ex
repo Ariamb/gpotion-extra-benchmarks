@@ -15,17 +15,17 @@ end
 {iteration, _} = Integer.parse(Enum.at(System.argv, 1))
 
 
-a = Enum.to_list(1..n)
-b = Enum.to_list(1..n)
+a = Matrex.new([Enum.to_list(1..n)])
+b = Matrex.new([Enum.to_list(1..n)])
 
 IO.puts("começando a calcular")
 prev = System.monotonic_time()
-c = Utils.dot_product(a, b, 0)
+c = Matrex.dot_nt(a, b)
 next = System.monotonic_time()
 IO.puts("terminei de calcular")
 IO.inspect(c)
 
 text = "time: #{System.convert_time_unit(next - prev,:native,:microsecond)} \t iteration: #{iteration} \t array size: #{n} \n"
-File.write!("time-elixir-cpudp.txt", text, [:append])
+File.write!("time-matrex-cpudp.txt", text, [:append])
 
 
