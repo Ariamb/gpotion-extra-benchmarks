@@ -1,36 +1,33 @@
 import Matrex
 
+
 defmodule Utils do
-    import Matrex
-
-    def fill_array(a, b, n, n) do 
-        {a, b}
+    def dot_product([],[], sum) do
+        sum
     end
-
-
-    def fill_array(a, b, i, n) do
-        fill_array(Matrex.set(a, 1, i + 1, i), Matrex.set(b, 1, i + 1, i), i+1, n)
+    def dot_product([a | as],[b | bs], sum) do
+        dot_product(as, bs, a * b + sum)
     end
-    
-  end
-  
+end 
+
 
 {n, _} = Integer.parse(Enum.at(System.argv, 0))
 {iteration, _} = Integer.parse(Enum.at(System.argv, 1))
 
 
-a = Matrex.ones(1, n)
-b = Matrex.ones(1, n)
+#a = Matrex.new([Enum.to_list(1..n)])
+#b = Matrex.new([Enum.to_list(1..n)])
+a = Enum.to_list(1..n)
+b = Enum.to_list(1..n)
 
-{a, b} = Utils.fill_array(a, b, 0, n)
-
+#c = Matrex.dot_nt(a, b)
 prev = System.monotonic_time()
-c = Matrex.dot_nt(a, b)
+c = Utils.dot_product(a, b, 0)
 next = System.monotonic_time()
 
 IO.inspect(c)
 
-text = "time: #{System.convert_time_unit(next - prev,:native,:millisecond)} \t iteration: #{iteration} \t array size: #{n} \n"
+text = "time: #{System.convert_time_unit(next - prev,:native,:microsecond)} \t iteration: #{iteration} \t array size: #{n} \n"
 File.write!("time-cpudp.txt", text, [:append])
 
 

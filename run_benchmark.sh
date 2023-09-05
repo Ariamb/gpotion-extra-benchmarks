@@ -6,11 +6,12 @@ N=30
 sh compile.sh
 
 
-for SIZE in 1000 100000 1000000; do
+for SIZE in 1000 100000 1000000 10000000 100000000; do
     echo $SIZE
 
     for i in $(seq 1 $N); do
         echo $i
+    sleep 1
 
 	echo C GPU
         ./c_implementations/cdotproduct $SIZE $i

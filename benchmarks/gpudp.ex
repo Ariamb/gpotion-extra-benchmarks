@@ -78,7 +78,7 @@ next = System.monotonic_time()
 
 #next = System.monotonic_time()
 
-text = "time: #{System.convert_time_unit(next - prev,:native,:millisecond)} \t iteration: #{iteration} \t array size: #{n} \n"
+text = "time: #{System.convert_time_unit(next - prev,:native,:microsecond)} \t iteration: #{iteration} \t array size: #{n} \n"
 File.write!("time-GPUDP.txt", text, [:append])
 
 #prev = System.monotonic_time()

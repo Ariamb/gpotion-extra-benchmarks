@@ -108,7 +108,7 @@ int main (int argc, char *argv[]) {
 	free(a);
 	free(b);
 	free(partial_c);
-    cpu_time_used = ((double) (end_time - start_time) * 1000) / CLOCKS_PER_SEC;
+    cpu_time_used = ((double) (end_time - start_time) * 1000000) / CLOCKS_PER_SEC;
 	generateLog(cpu_time_used, iteration, N);
 
 
