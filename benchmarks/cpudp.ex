@@ -15,14 +15,15 @@ end
 {iteration, _} = Integer.parse(Enum.at(System.argv, 1))
 
 
-#a = Matrex.new([Enum.to_list(1..n)])
-#b = Matrex.new([Enum.to_list(1..n)])
-a = Enum.to_list(1..n)
-b = Enum.to_list(1..n)
+a = Matrex.new([Enum.to_list(1..n)])
+b = Matrex.new([Enum.to_list(1..n)])
+#a = Enum.to_list(1..n)
+#b = Enum.to_list(1..n)
 
 #c = Matrex.dot_nt(a, b)
 prev = System.monotonic_time()
-c = Utils.dot_product(a, b, 0)
+#c = Utils.dot_product(a, b, 0)
+c = Matrex.dot_nt(a, b)
 next = System.monotonic_time()
 
 IO.inspect(c)
