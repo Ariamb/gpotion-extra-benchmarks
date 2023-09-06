@@ -1,7 +1,7 @@
 #!/bin/bash
 
 N=30
-
+SPHERES=20
 # Compiling files
 #sh compile.sh
 
@@ -14,16 +14,16 @@ for SIZE in 256 1024 3096; do
     #sleep 1
 
 	echo C GPU
-        ./c_implementations/craytracer $SIZE $i
+        ./c_implementations/craytracer $SIZE $SPHERES $i
     sleep 0.2
     
     echo Elixir CPU
-        mix run benchmarks/cpuraytracer.ex $SIZE $i
+        mix run benchmarks/cpuraytracer.ex $SIZE $SPHERES $i
     sleep 0.2
 
 
     echo Elixir GPU
-        mix run benchmarks/gpuraytracer.ex $SIZE $i
+        mix run benchmarks/gpuraytracer.ex $SIZE $SPHERES $i
     done
     sleep 0.2
 done

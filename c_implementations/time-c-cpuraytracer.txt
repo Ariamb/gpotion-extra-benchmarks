@@ -1,0 +1,3 @@
+time: 256.000000 	 spheres 20 	 iteration 1.
+time: 1024.000000 	 spheres 20 	 iteration 1.
+time: 1024.000000 	 spheres 20 	 iteration 1.

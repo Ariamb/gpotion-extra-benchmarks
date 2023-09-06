@@ -8,3 +8,8 @@ time: 126086278, iteration: 1, dimension: 256x256, spheres: 20
 time: 132384147, iteration: 1, dimension: 256x256, spheres: 20 
 time: 133293380, iteration: 1, dimension: 256x256, spheres: 20 
 time: 124808043, iteration: 1, dimension: 256x256, spheres: 20 
+time: 94642769, iteration: 20, dimension: 256x256, spheres: 20 
+time: 92728722, iteration: 20, dimension: 256x256, spheres: 20 
+time: 1988542067, iteration: 20, dimension: 1024x1024, spheres: 20 
+time: 1972980097, iteration: 20, dimension: 1024x1024, spheres: 20 
+time: 17680445611, iteration: 20, dimension: 3096x3096, spheres: 20 

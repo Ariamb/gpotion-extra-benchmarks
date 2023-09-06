@@ -1,0 +1,2 @@
+time: 55885244, iteration: 55, dimension: 20x256, spheres: 55 
+time: 51374168, iteration: 20, dimension: 256x256, spheres: 20 
