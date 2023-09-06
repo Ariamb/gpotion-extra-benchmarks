@@ -32,3 +32,6 @@ time: 1446.000000 	 spheres 20 	 iteration 1.
 time: 1447.000000 	 spheres 20 	 iteration 1.
 time: 1447.000000 	 spheres 20 	 iteration 1.
 time: 1447.000000 	 spheres 20 	 iteration 1.
+time: 256.000000 	 spheres 20 	 iteration 1.
+time: 1024.000000 	 spheres 20 	 iteration 1.
+time: 2048.000000 	 spheres 20 	 iteration 1.

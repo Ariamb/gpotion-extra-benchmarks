@@ -182,7 +182,6 @@ __global__ void kernel(int dim,  unsigned char *ptr ) {
 
 
 int main(int argc, char *argv[]){
-    printf("GOD HELP ME \n");
     int dim = atoi(argv[1]);
     int sph = atoi(argv[2]);
     int iteration = atoi(argv[3]);
@@ -201,7 +200,6 @@ int main(int argc, char *argv[]){
     // allocate temp memory, initialize it, copy to constant
     // memory on the GPU, then free our temp memory
     Sphere *temp_s = (Sphere*)malloc( sizeof(Sphere) * SPHERES );
-    printf("size of sphere: %ld", sizeof(Sphere));
 
     /*
     for (int i=0; i<SPHERES; i++) {
@@ -222,7 +220,6 @@ int main(int argc, char *argv[]){
         printf("z: %f \n", temp_s[i].z);
     }
 */
-    printf("dim: %d \n", dim);
 
     if(dim == 256) {
       temp_s[0] = {0.5647144993438521,
@@ -427,7 +424,7 @@ int main(int argc, char *argv[]){
       temp_s[18] = { 0.2659993285927915, 0.3164159062471389, 0.46769615771965695, 60.02075258644368, -413.40324106570637, -255.80468153935362, 4.4024781029694395};
       temp_s[19] = { 0.5646229438154241, 0.6811426129947813, 0.023316141239661855, 56.915189062166206, 85.29947813348792, 250.8670308542131, -123.35142063661611};
     }
-    if(dim != 3096){
+    if(dim == 3096){
       temp_s[0]={ 0.5647144993438521, 0.17026276436658833, 0.2513199255348369, 118.47956785790582, -1011.8903775139622, -1447.4676351207006, 98.2803430280465};
       temp_s[1]={ 0.9091158787804804, 0.1487777336954863, 0.1783196508682516, 154.84786523026216, -49.36857203894169, -7.228125858332987, 24.65309610278635};
       temp_s[2]={ 0.6624347666859951, 0.3954588457899716, 0.6516922513504441, 120.89175084688864, 177.20719016083262, -1335.1246070741904, 4.207159642323063};
@@ -450,26 +447,21 @@ int main(int argc, char *argv[]){
       temp_s[19]={ 0.5646229438154241, 0.6811426129947813, 0.023316141239661855, 93.83037812433241, 257.89764091921757, 758.480788598285, -123.35142063661611};
     }
 //*/
-    printf("só salvou o temp");
 
     cudaMemcpyToSymbol( s, temp_s, sizeof(Sphere) * SPHERES);
     free( temp_s );
 
     // generate a bitmap from our sphere data
-    dim3    grids(dim/16,dim/16);
+    dim3    grids(64,64);
     dim3    threads(16,16);
 
     //dim3    grids(DIM,DIM);
     //dim3    threads(1,1);
 
-    printf("ainda n chamou kernel");
-
     kernel<<<grids,threads>>>(dim, dev_bitmap );
 
     // copy our bitmap back from the GPU for display
     cudaMemcpy( final_bitmap, dev_bitmap, dim * dim * 4,cudaMemcpyDeviceToHost );
-
-    printf("chamou kernel");
 
 
     // get stop time, and display the timing results
@@ -480,16 +472,16 @@ int main(int argc, char *argv[]){
 
     int height = dim;
     int width = dim;
-    unsigned char image[height][width][BYTES_PER_PIXEL];
+    unsigned char* image = (unsigned char*) malloc(dim * dim *4); //[height][width][BYTES_PER_PIXEL];
     char* imageFileName = (char*) "bitmapImage.bmp";
 
     int i, j;
     for (i = 0; i < height; i++) {
         for (j = 0; j < width; j++) {
-            image[i][j][3] = (unsigned char) final_bitmap[(i * dim + j) * 4 + 3] ;
-            image[i][j][0] = (unsigned char) final_bitmap[(i * dim + j) * 4 + 2] ;
-            image[i][j][1] = (unsigned char) final_bitmap[(i * dim + j) * 4 + 1] ;
-            image[i][j][2] = (unsigned char) final_bitmap[(i * dim + j) * 4 + 0] ;
+            image[(i * dim + j) * 4 + 3] = final_bitmap[(i * dim + j) * 4 + 3] ;
+            image[(i * dim + j) * 4 + 0] = final_bitmap[(i * dim + j) * 4 + 2] ;
+            image[(i * dim + j) * 4 + 1] = final_bitmap[(i * dim + j) * 4 + 1] ;
+            image[(i * dim + j) * 4 + 2] = final_bitmap[(i * dim + j) * 4 + 0] ;
         }
     }
 
@@ -498,11 +490,8 @@ int main(int argc, char *argv[]){
 
     generateLog(dim, sph, iteration);
     //no display, only write to file
-    printf("final bmp! %d %d %d %d \n", final_bitmap[0], final_bitmap[1], final_bitmap[2], final_bitmap[3]);
-    printf("final bmp! %d %d %d %d \n", final_bitmap[4], final_bitmap[5], final_bitmap[6], final_bitmap[7]);
 
-    printf("img! %d %d %d %d \n", image[0][0][0], image[0][0][1], image[0][0][2], image[0][0][3]);
-    printf("img! %d %d %d %d \n", image[0][1][0], image[0][1][1], image[0][1][2], image[0][1][3]);
-
-
+    free(image);
+    free(final_bitmap);
+W
 }
