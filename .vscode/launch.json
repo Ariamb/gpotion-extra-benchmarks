@@ -3,6 +3,16 @@
     // Hover to view descriptions of existing attributes.
     // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
-    "configurations": [],
-    "args": ["3096", "20", "1"]
+    "configurations": [
+        {
+            "name": "CUDA: Debug with CUDA-GDB",
+            "type": "cuda-gdb",
+            "request": "launch",
+            "program": "c_implementations/craytracer",
+            
+        },
+    ],
+    "args": ["1024", "20", "1"]
+
+
 }
