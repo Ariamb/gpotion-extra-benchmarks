@@ -1,0 +1,16 @@
+CCCCCCCCCCCCCCCCCC
+
+time: 62026.000000.0, 	 iteration: 1, 	 dimension: 256, 	 spheres 20
+time: 51040.000000.0, 	 iteration: 1, 	 dimension: 1024, 	 spheres 20
+time: 50490.000000.0, 	 iteration: 1, 	 dimension: 3072, 	 spheres 20
+
+
+CCCCCCCCCCCCPPPPPPPPPPPPPPPUUUUUUUUUUUUUUUUUUU
+time: 92752683, iteration: 1, dimension: 256x256, spheres: 20 
+time: 1951917453, iteration: 1, dimension: 1024x1024, spheres: 20 
+time: 17661399394, iteration: 1, dimension: 3072x3072, spheres: 20 
+
+GPPPPPPPPPPPOOOOOOOOOOTTTTTTTTTTIIIIIOOOOOOOOONNNNNNN
+time: 1658018, iteration: 1, dimension: 256x256, spheres: 20 
+time: 1660789, iteration: 1, dimension: 1024x1024, spheres: 20 
+time: 2398677, iteration: 1, dimension: 3072x3072, spheres: 20 

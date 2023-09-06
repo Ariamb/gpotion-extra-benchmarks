@@ -61,7 +61,7 @@ defmodule CPUraytracer do
         d
     end
     def spheres do
-        {s, _} = Integer.parse(Enum.at(System.argv, 2))
+        {s, _} = Integer.parse(Enum.at(System.argv, 1))
         s
     end
     def minusinf do
@@ -123,27 +123,27 @@ defmodule Main do
         x * Random.randint(1, 32767) / 32767
     end
     
-    def sphereMaker(1) do
+    def sphereMaker(1, radius, sum) do
         [%Sphere{
             r: Main.rnd(1),
             g: Main.rnd(1),
             b: Main.rnd(1),
-            radius: Main.rnd(160) + 20,
+            radius: Main.rnd(radius) + sum,
             x: Main.rnd(CPUraytracer.dim) - trunc(CPUraytracer.dim / 2),
             y: Main.rnd(CPUraytracer.dim) - trunc(CPUraytracer.dim / 2),
             z: Main.rnd(256) - 128, #hardcoded
         }]
     end
-    def sphereMaker(n) do
+    def sphereMaker(n, radius, sum) do
         [%Sphere{
             r: Main.rnd(1),
             g: Main.rnd(1),
             b: Main.rnd(1),
-            radius: Main.rnd(160) + 20,
+            radius: Main.rnd(radius) + sum,
             x: Main.rnd(CPUraytracer.dim) - trunc(CPUraytracer.dim / 2),
             y: Main.rnd(CPUraytracer.dim) - trunc(CPUraytracer.dim / 2),
             z: Main.rnd(256) - 128, #hardcoded
-        } | sphereMaker(n - 1)]
+        } | sphereMaker(n - 1, radius, sum)]
     end
 
     def spherePrinter([]) do
@@ -164,7 +164,15 @@ defmodule Main do
   
 
     def main do
-        sphereList = sphereMaker(CPUraytracer.spheres)
+        
+        {radius, sum} = cond do
+            CPUraytracer.dim == 256 -> {20, 5}
+            CPUraytracer.dim == 1024 -> {80, 20}
+            CPUraytracer.dim == 3072 -> {160, 20} 
+        end
+
+        sphereList = sphereMaker(CPUraytracer.spheres, radius, sum)
+
         spherePrinter(sphereList)
         
         width = CPUraytracer.dim
@@ -182,13 +190,13 @@ defmodule Main do
         paddingSize = rem((4 - rem(widthInBytes, 4)), 4)
         stride = widthInBytes + paddingSize
 
-        IO.puts("ray tracer completo, começando escrita")
-        Bmpgen.writeFileHeader(height, stride)
-        Bmpgen.writeInfoHeader(height, width)
-        Bmpgen.recursiveWrite(image)
+        IO.puts("ray tracer completo, mas sem escrita")
+        #Bmpgen.writeFileHeader(height, stride)
+        #Bmpgen.writeInfoHeader(height, width)
+        #Bmpgen.recursiveWrite(image)
         
         {iteration, _} = Integer.parse(Enum.at(System.argv, 2))
-        text = "time: #{next - prev}, iteration: #{iteration}, dimension: #{height}x#{width}, spheres: #{CPUraytracer.spheres} \n"
+        text = "time: #{System.convert_time_unit(next - prev,:native,:microsecond)}, iteration: #{iteration}, dimension: #{height}x#{width}, spheres: #{CPUraytracer.spheres} \n"
 
         File.write!("time-cpuraytracer.txt", text, [:append])
     end

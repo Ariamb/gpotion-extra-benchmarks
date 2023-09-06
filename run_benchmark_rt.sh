@@ -3,15 +3,15 @@
 N=30
 SPHERES=20
 # Compiling files
-#sh compile.sh
+sh compile.sh
 
 
-for SIZE in 256 1024 3096; do
+for SIZE in 256 1024 3072; do # 256 1024 3072
     echo $SIZE
 
     for i in $(seq 1 $N); do
         echo $i
-    #sleep 1
+    sleep 1
 
 	echo C GPU
         ./c_implementations/craytracer $SIZE $SPHERES $i

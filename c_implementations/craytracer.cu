@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <time.h>
 
 #define rnd( x ) (x * rand() / RAND_MAX)
 #define INF     2e10f
@@ -18,13 +19,13 @@ unsigned char* createBitmapFileHeader(int height, int stride);
 unsigned char* createBitmapInfoHeader(int height, int width);
 
 
-void generateLog(double time, int spheres, int interation){
+void generateLog(double time, int dim, int spheres, int iteration){
   printf("Writting operation time to file.\n");
   FILE *file;
-  char filename[] = "time-c-cpuraytracer.txt";
+  char filename[] = "time-c-gpuraytracer.txt";
 
   file = fopen(filename, "a");
-  fprintf(file, "time: %f \t spheres %d \t iteration %d.\n", time, spheres, interation);
+  fprintf(file, "time: %f.0, \t iteration: %d, \t dimension: %d, \t spheres %d\n", time, iteration, dim, spheres); 
   fclose(file);
   
   printf("done.\n");
@@ -136,9 +137,9 @@ struct Sphere {
 
 
 #define SPHERES 20
-__constant__ Sphere s[SPHERES];
+//__constant__ Sphere s[SPHERES];
 
-__global__ void kernel(int dim,  unsigned char *ptr ) {
+__global__ void kernel(int dim, Sphere * s,  unsigned char *ptr ) {
     // map from threadIdx/BlockIdx to pixel position
     int x = threadIdx.x + blockIdx.x * blockDim.x;
     int y = threadIdx.y + blockIdx.y * blockDim.y;
@@ -191,7 +192,6 @@ int main(int argc, char *argv[]){
     unsigned char   *final_bitmap;
     unsigned char   *dev_bitmap;
 
-    cudaMalloc( (void**)&dev_bitmap, dim * dim * 4);
 
     final_bitmap = (unsigned char*) malloc(dim * dim *4);
 
@@ -200,26 +200,6 @@ int main(int argc, char *argv[]){
     // allocate temp memory, initialize it, copy to constant
     // memory on the GPU, then free our temp memory
     Sphere *temp_s = (Sphere*)malloc( sizeof(Sphere) * SPHERES );
-
-    /*
-    for (int i=0; i<SPHERES; i++) {
-        temp_s[i].r = rnd( 1.0f );
-        temp_s[i].g = rnd( 1.0f );
-        temp_s[i].b = rnd( 1.0f );
-        temp_s[i].x = rnd( 256.0f ) - 128;
-        temp_s[i].y = rnd( 256.0f ) - 128;
-        temp_s[i].z = rnd( 256.0f ) - 128;
-        temp_s[i].radius = rnd( 20.0f ) + 5;
-        printf("sphere{\n");
-        printf("temp_[] = { %f \n", temp_s[i].r);}
-        printf("g: %f \n", temp_s[i].g);
-        printf("b: %f \n", temp_s[i].b);
-        printf("radius: %f \n", temp_s[i].radius);
-        printf("x: %f \n", temp_s[i].x);
-        printf("y: %f \n", temp_s[i].y);
-        printf("z: %f \n", temp_s[i].z);
-    }
-*/
 
     if(dim == 256) {
       temp_s[0] = {0.5647144993438521,
@@ -424,7 +404,7 @@ int main(int argc, char *argv[]){
       temp_s[18] = { 0.2659993285927915, 0.3164159062471389, 0.46769615771965695, 60.02075258644368, -413.40324106570637, -255.80468153935362, 4.4024781029694395};
       temp_s[19] = { 0.5646229438154241, 0.6811426129947813, 0.023316141239661855, 56.915189062166206, 85.29947813348792, 250.8670308542131, -123.35142063661611};
     }
-    if(dim == 3096){
+    if(dim == 3072){
       temp_s[0]={ 0.5647144993438521, 0.17026276436658833, 0.2513199255348369, 118.47956785790582, -1011.8903775139622, -1447.4676351207006, 98.2803430280465};
       temp_s[1]={ 0.9091158787804804, 0.1487777336954863, 0.1783196508682516, 154.84786523026216, -49.36857203894169, -7.228125858332987, 24.65309610278635};
       temp_s[2]={ 0.6624347666859951, 0.3954588457899716, 0.6516922513504441, 120.89175084688864, 177.20719016083262, -1335.1246070741904, 4.207159642323063};
@@ -446,34 +426,40 @@ int main(int argc, char *argv[]){
       temp_s[18]={ 0.2659993285927915, 0.3164159062471389, 0.46769615771965695, 100.04150517288736, -1249.8988616595966, -773.4094668416394, 4.4024781029694395};
       temp_s[19]={ 0.5646229438154241, 0.6811426129947813, 0.023316141239661855, 93.83037812433241, 257.89764091921757, 758.480788598285, -123.35142063661611};
     }
-//*/
 
-    cudaMemcpyToSymbol( s, temp_s, sizeof(Sphere) * SPHERES);
-    free( temp_s );
+    clock_t start_time, end_time;
+    double elapsed_time;
+
+    //start_time = clock();
+    cudaMalloc( (void**)&dev_bitmap, dim * dim * 4);
+
+    //cudaMemcpyToSymbol( s, temp_s, sizeof(Sphere) * SPHERES);
 
     // generate a bitmap from our sphere data
-    dim3    grids(64,64);
+    dim3    grids(dim/16,dim/16);
     dim3    threads(16,16);
 
-    //dim3    grids(DIM,DIM);
-    //dim3    threads(1,1);
+    start_time = clock();
 
-    kernel<<<grids,threads>>>(dim, dev_bitmap );
+    kernel<<<grids,threads>>>(dim, temp_s, dev_bitmap );
+    end_time = clock();
 
     // copy our bitmap back from the GPU for display
     cudaMemcpy( final_bitmap, dev_bitmap, dim * dim * 4,cudaMemcpyDeviceToHost );
-
-
-    // get stop time, and display the timing results
-
-
-
+        
     cudaFree( dev_bitmap );
+    end_time = clock();
+
 
     int height = dim;
     int width = dim;
     unsigned char* image = (unsigned char*) malloc(dim * dim *4); //[height][width][BYTES_PER_PIXEL];
-    char* imageFileName = (char*) "bitmapImage.bmp";
+
+    elapsed_time = ((double)(end_time - start_time) * 1000000.0) / CLOCKS_PER_SEC;
+    char imageFileName[50];
+
+    sprintf(imageFileName, "img-c-CUDAraytracer-%dx%d.bmp", dim, dim);
+  
 
     int i, j;
     for (i = 0; i < height; i++) {
@@ -485,13 +471,15 @@ int main(int argc, char *argv[]){
         }
     }
 
-    generateBitmapImage((unsigned char*) image, height, width, imageFileName);
-    printf("Image generated!!");
+    //generateBitmapImage((unsigned char*) image, height, width, imageFileName);
+    printf("Image not generated!!");
 
-    generateLog(dim, sph, iteration);
+    generateLog(elapsed_time, dim, sph, iteration);
     //no display, only write to file
 
     free(image);
+    free( temp_s );
+
     free(final_bitmap);
-W
+
 }

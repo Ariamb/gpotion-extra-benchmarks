@@ -83,7 +83,7 @@ defmodule Bmpgen do
   #def recursiveWrite([a | image], i, max) do
   def recursiveWrite([r, g, b, 255.0 | image]) do
     l = [<<trunc(g)>>, <<trunc(b)>>, <<trunc(r)>>, <<255>>]
-    File.write!("img-gpuraytracer-#{Main.dimx}x#{Main.dimy}.bmp", l, [:append])
+    File.write!("img-gpuraytracer-#{Main.dim}x#{Main.dim}.bmp", l, [:append])
     recursiveWrite(image)
 
 
@@ -92,12 +92,12 @@ defmodule Bmpgen do
     fileSize = Bmpgen.fileHeaderSize + Bmpgen.infoHeaderSize + (stride * height)    
     fileHeader = ['B'] ++ ['M'] ++ [<<fileSize>>] ++ [<<fileSize >>> 8>>] ++ [<<fileSize >>> 16>>] ++ [<<fileSize >>> 24>>] ++ List.duplicate(<<0>>, 4) ++ [<<Bmpgen.fileHeaderSize + Bmpgen.infoHeaderSize>>] ++ List.duplicate(<<0>>, 3)
     IO.puts("\n-----------------------\n")
-    File.write!("img-gpuraytracer-#{Main.dimx}x#{Main.dimy}.bmp", fileHeader)
+    File.write!("img-gpuraytracer-#{Main.dim}x#{Main.dim}.bmp", fileHeader)
   end
   def writeInfoHeader(height, width) do
     
     infoHeader = [<<Bmpgen.infoHeaderSize>>] ++ List.duplicate(<<0>>, 3) ++ [<<width>>, <<width >>> 8>>, <<width >>> 16>>, <<width >>> 24>>, <<height>>, <<height >>> 8>>, <<height >>> 16>>, <<height >>> 24>>, <<1>>, <<0>>, <<Bmpgen.bytes_per_pixel * 8>>] ++ List.duplicate(<<0>>, 25)
-    File.write!("img-gpuraytracer-#{Main.dimx}x#{Main.dimy}.bmp", infoHeader, [:append])
+    File.write!("img-gpuraytracer-#{Main.dim}x#{Main.dim}.bmp", infoHeader, [:append])
   end
 end
 
@@ -108,27 +108,27 @@ defmodule Main do
     end
     
 
-    def sphereMaker2(1) do
+    def sphereMaker2(1, radius, sum) do
       [
         Main.rnd(1),
         Main.rnd(1),
         Main.rnd(1),
-        Main.rnd(20) + 5,
-        Main.rnd(Main.dimx) - trunc(Main.dimx / 2),
-        Main.rnd(Main.dimy) - trunc(Main.dimy / 2),
+        Main.rnd(radius) + sum,
+        Main.rnd(Main.dim) - trunc(Main.dim / 2),
+        Main.rnd(Main.dim) - trunc(Main.dim / 2),
         Main.rnd(256) - 128 #hardcoded
         ]
     end
-    def sphereMaker2(n) do
+    def sphereMaker2(n, radius, sum) do
       [
         Main.rnd(1),
         Main.rnd(1),
         Main.rnd(1),
-        Main.rnd(20) + 5,
-        Main.rnd(Main.dimx) - trunc(Main.dimx / 2),
-        Main.rnd(Main.dimy) - trunc(Main.dimy / 2),
+        Main.rnd(radius) + sum,
+        Main.rnd(Main.dim) - trunc(Main.dim / 2),
+        Main.rnd(Main.dim) - trunc(Main.dim / 2),
         Main.rnd(256) - 128
-      | sphereMaker2(n - 1)]
+      | sphereMaker2(n - 1, radius, sum)]
     end
 
     def spherePrinter([]) do
@@ -150,8 +150,8 @@ defmodule Main do
         |> Matrex.set( 1, max * 7 + 2, Main.rnd(1)) #g
         |> Matrex.set( 1, max * 7 + 3, Main.rnd(1)) #b
         |> Matrex.set( 1, max * 7 + 4, Main.rnd(20) + 5) #radius
-        |> Matrex.set( 1, max * 7 + 5, Main.rnd(Main.dimx) - Main.dimx/2) #x
-        |> Matrex.set( 1, max * 7 + 6, Main.rnd(Main.dimy) - Main.dimy/2) #y
+        |> Matrex.set( 1, max * 7 + 5, Main.rnd(Main.dim) - Main.dim/2) #x
+        |> Matrex.set( 1, max * 7 + 6, Main.rnd(Main.dim) - Main.dim/2) #y
         |> Matrex.set( 1, max * 7 + 7, Main.rnd(256) - 128) #z
     end
     def sphereMaker(spheres, n, max) do
@@ -160,44 +160,50 @@ defmodule Main do
       |> Matrex.set( 1, (n - 1) * 7 + 2, Main.rnd(1)) #g
       |> Matrex.set( 1, (n - 1) * 7 + 3, Main.rnd(1)) #b
       |> Matrex.set( 1, (n - 1) * 7 + 4, Main.rnd(20) + 5) #radius
-      |> Matrex.set( 1, (n - 1) * 7 + 5, Main.rnd(Main.dimx) - Main.dimx/2) #x
-      |> Matrex.set( 1, (n - 1) * 7 + 6, Main.rnd(Main.dimy) - Main.dimy/2) #y
+      |> Matrex.set( 1, (n - 1) * 7 + 5, Main.rnd(Main.dim) - Main.dim/2) #x
+      |> Matrex.set( 1, (n - 1) * 7 + 6, Main.rnd(Main.dim) - Main.dim/2) #y
       |> Matrex.set( 1, (n - 1) * 7 + 7, Main.rnd(256) - 128) #z
       |> sphereMaker(n + 1, max)
     end
 
-    def dimx do
+    def dim do
       {d, _} = Integer.parse(Enum.at(System.argv, 0))
       d
     end
-    def dimy do
-      {d, _} = Integer.parse(Enum.at(System.argv, 1))
-      d
-    end
     def spheres do
-      {s, _} = Integer.parse(Enum.at(System.argv, 2))
+      {s, _} = Integer.parse(Enum.at(System.argv, 1))
       s
     end
 
     def main do
-        sphereList = Matrex.new([sphereMaker2(Main.spheres)])
+        {radius, sum} = cond do
+          Main.dim == 256 -> {20, 5}
+          Main.dim == 1024 -> {80, 20}
+          Main.dim == 3072 -> {160, 20} 
+        end
+        sphereList = Matrex.new([sphereMaker2(Main.spheres, radius, sum)])
 
-        width = Main.dimx
-        height = Main.dimy
+        width = Main.dim
+        height = width
+
+        
 
         imageList = Matrex.zeros(1, (width + 1) * (height + 1) * 4)
 
-        prev = System.monotonic_time()
-        kernel = GPotion.load(&RayTracer.raytracing/3)
-        
         refSphere = GPotion.new_gmatrex(sphereList)
         refImag = GPotion.new_gmatrex(imageList)
+        prev = System.monotonic_time()
+        
+        
+        kernel = GPotion.load(&RayTracer.raytracing/3)
+        
+        
 
         GPotion.spawn(kernel,{trunc(width/16),trunc(height/16),1},{16,16,1},[width, height, refSphere, refImag])
         GPotion.synchronize()
-        
-        image = GPotion.get_gmatrex(refImag)
+
         next = System.monotonic_time()
+        image = GPotion.get_gmatrex(refImag)
 
 
 
@@ -212,14 +218,14 @@ defmodule Main do
         stride = widthInBytes + paddingSize
         IO.puts("ray tracer completo, tempo de execução: #{next - prev}")
 
-        IO.puts("começando escrita")
-        Bmpgen.writeFileHeader(height, stride)
-        Bmpgen.writeInfoHeader(height, width)
-        Bmpgen.recursiveWrite(image)
+        IO.puts("sem escrita de img")
+        #Bmpgen.writeFileHeader(height, stride)
+        #Bmpgen.writeInfoHeader(height, width)
+        #Bmpgen.recursiveWrite(image)
 
         #-----------------logging times-----------------------------#
         {iteration, _} = Integer.parse(Enum.at(System.argv, 2))
-        text = "time: #{next - prev}, iteration: #{iteration}, dimension: #{height}x#{width}, spheres: #{Main.spheres} \n"
+        text = "time: #{System.convert_time_unit(next - prev,:native,:microsecond)}, iteration: #{iteration}, dimension: #{height}x#{width}, spheres: #{Main.spheres} \n"
 
         File.write!("time-gpuraytracer.txt", text, [:append])
       
