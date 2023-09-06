@@ -2,3 +2,4 @@ _build/
 deps/
 c_implementations/cdotproduct
 c_implementations/craytracer
+erl_crash.dump
