@@ -1,14 +1,5 @@
 import Matrex
 
-defmodule Utils do
-    def dot_product([],[], sum) do
-        sum
-    end
-    def dot_product([a | as],[b | bs], sum) do
-        dot_product(as, bs, a * b + sum)
-    end
-end 
-
 {n, _} = Integer.parse(Enum.at(System.argv, 0))
 {iteration, _} = Integer.parse(Enum.at(System.argv, 1))
 
