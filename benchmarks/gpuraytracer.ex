@@ -195,14 +195,14 @@ defmodule Main do
         image = GPotion.get_gmatrex(refImag)
         next = System.monotonic_time()
         
-        IO.puts("Ray tracer completo, começando escrita de imagem")
+        IO.puts("Ray tracer completo, iniciado escrita de imagem")
         image = Matrex.to_list(image)
 
         widthInBytes = width * Bmpgen.bytes_per_pixel
         paddingSize = rem((4 - rem(widthInBytes, 4)), 4)
         stride = widthInBytes + paddingSize
 
-        IO.puts("Ray tracer completo, começando escrita de imagem")
+        IO.puts("Ray tracer completo, iniciado escrita de imagem")
         Bmpgen.writeFileHeader(height, stride)
         Bmpgen.writeInfoHeader(height, width)
         Bmpgen.recursiveWrite(image)
