@@ -1,6 +1,5 @@
 import Matrex
 
-
 defmodule Utils do
     def dot_product([],[], sum) do
         sum
@@ -10,19 +9,19 @@ defmodule Utils do
     end
 end 
 
-
 {n, _} = Integer.parse(Enum.at(System.argv, 0))
 {iteration, _} = Integer.parse(Enum.at(System.argv, 1))
-
 
 a = Enum.to_list(1..n)
 b = Enum.to_list(1..n)
 
-IO.puts("começando a calcular")
+IO.puts("Começando o cálculo de dot product")
+
 prev = System.monotonic_time()
 c = Utils.dot_product(a, b, 0)
 next = System.monotonic_time()
-IO.puts("terminei de calcular")
+
+IO.puts("Cálculo finalizado. Resultado: #{c}")
 IO.inspect(c)
 
 text = "time: #{System.convert_time_unit(next - prev,:native,:microsecond)} \t iteration: #{iteration} \t array size: #{n} \n"
