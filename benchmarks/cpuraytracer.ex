@@ -96,7 +96,6 @@ defmodule Bmpgen do
     IO.puts("done opening!")
   end
 
-  #def recursiveWrite([a | image], i, max) do
   def recursiveWrite([r, g, b, 255 | image]) do
     l = [<<trunc(g)>>, <<trunc(b)>>, <<trunc(r)>>, <<255>>]
     File.write!("img-cpuraytracer-#{CPUraytracer.dim}x#{CPUraytracer.dim}.bmp", l, [:append])
