@@ -1,5 +1,3 @@
-import Matrex
-
 defmodule Utils do
     def dot_product([],[], sum) do
         sum
