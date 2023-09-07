@@ -32,20 +32,10 @@ defmodule GPUDP do
 end
 end
 
-
-defmodule FUNC do
-  def fill_array(a, b, n, n) do 
-    {a, b}
-  end
-  def fill_array(a, b, i, n) do
-    fill_array(Matrex.set(a, 1, i + 1, i), Matrex.set(b, 1, i + 1, i), i+1, n)
-  end  
-end
-
 {n, _} = Integer.parse(Enum.at(System.argv, 0))
 {iteration, _} = Integer.parse(Enum.at(System.argv, 1))
 
-list = [Enum.to_list(0..n-1)]
+list = [Enum.to_list(1..n)]
 
 vet1 = Matrex.new(list)
 vet2 = Matrex.new(list)
@@ -61,27 +51,17 @@ prev = System.monotonic_time()
 
 kernel=GPotion.load(&DP.dot_product/5)
 
-
 ref1=GPotion.new_gmatrex(vet1)
 ref2=GPotion.new_gmatrex(vet2)
-ref3=GPotion.new_gmatrex(vet3)                                                                                                                                                                                                                                                                                 
-
+ref3=GPotion.new_gmatrex(vet3)
 
 GPotion.spawn(kernel,{numberOfBlocks,1,1},{threadsPerBlock,1,1},[ref3, ref1,ref2,n])
 GPotion.synchronize()
-
-#IO.puts "time gpu #{System.convert_time_unit(next-prev,:native,:millisecond)}"
 
 resultreal = GPotion.get_gmatrex(ref3)
 s = Matrex.sum(resultreal)
 next = System.monotonic_time()
 
-#next = System.monotonic_time()
 
 text = "time: #{System.convert_time_unit(next - prev,:native,:microsecond)} \t iteration: #{iteration} \t array size: #{n} \n"
 File.write!("time-GPUDP.txt", text, [:append])
-
-#prev = System.monotonic_time()
-#eresult = Matrex.add(vet1,vet2)
-#next = System.monotonic_time()
-#IO.puts "time cpu #{System.convert_time_unit(next-prev,:native,:millisecond)}"
