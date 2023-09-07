@@ -4,7 +4,6 @@ import Bitwise
 Random.seed(313)
 defmodule CPUraytracer do
     def kernel(spheres, image, {x, y}, dim) do
-
         ox = x - dim / 2
         oy = y - dim / 2
         {r, g, b} = loopSpheres(spheres, {0, 0, 0}, {ox, oy}, CPUraytracer.minusinf)
@@ -15,8 +14,6 @@ defmodule CPUraytracer do
         image
     end
     
-    
-    
     def kernelLoop(spheres, image, max, j, max) do 
         CPUraytracer.kernelLoop(spheres, image, 0, j+1, max)
     end
@@ -26,9 +23,6 @@ defmodule CPUraytracer do
     end
 
     def loopSpheres([], color, _,  _) do
-        #if x >= CPUraytracer.dim / 2 do
-        #    IO.puts("#{y + CPUraytracer/2 - 1}/CPUraytracer.dim")    
-        #end
         color
     end
 
@@ -43,7 +37,6 @@ defmodule CPUraytracer do
             {0, CPUraytracer.minusinf}
         end
         
-
         if  t > maxz do
             maxz = t
             loopSpheres(sphereList, {
@@ -69,7 +62,6 @@ defmodule CPUraytracer do
     end
 end
 
-
 defmodule Sphere do
     defstruct r: 0, g: 0, b: 0, radius: 0, x: 0, y: 0, z: 0
 
@@ -78,14 +70,12 @@ defmodule Sphere do
     end
 end
 
-
 defmodule Bmpgen do
-
-  def fileHeaderSize do #constant
+  def fileHeaderSize do
     14
   end
 
-  def infoHeaderSize do #constant
+  def infoHeaderSize do
     40
   end
 
@@ -130,7 +120,7 @@ defmodule Main do
             radius: Main.rnd(radius) + sum,
             x: Main.rnd(CPUraytracer.dim) - trunc(CPUraytracer.dim / 2),
             y: Main.rnd(CPUraytracer.dim) - trunc(CPUraytracer.dim / 2),
-            z: Main.rnd(256) - 128, #hardcoded
+            z: Main.rnd(256) - 128,
         }]
     end
     def sphereMaker(n, radius, sum) do
@@ -141,7 +131,7 @@ defmodule Main do
             radius: Main.rnd(radius) + sum,
             x: Main.rnd(CPUraytracer.dim) - trunc(CPUraytracer.dim / 2),
             y: Main.rnd(CPUraytracer.dim) - trunc(CPUraytracer.dim / 2),
-            z: Main.rnd(256) - 128, #hardcoded
+            z: Main.rnd(256) - 128,
         } | sphereMaker(n - 1, radius, sum)]
     end
 
@@ -149,7 +139,7 @@ defmodule Main do
         File.write!("spherecpuX#{CPUraytracer.dim}.txt", "done\n", [:append])
         
       end
-      def spherePrinter([ sphere | list]) do #usar para transferir spheras entre códigos
+      def spherePrinter([ sphere | list]) do
         File.write!("spherecpuX#{CPUraytracer.dim}.txt", "\t r: #{sphere.r}", [:append])
         File.write!("spherecpuX#{CPUraytracer.dim}.txt", "\t g: #{sphere.g}", [:append])
         File.write!("spherecpuX#{CPUraytracer.dim}.txt", "\t b: #{sphere.b}", [:append])
@@ -161,7 +151,6 @@ defmodule Main do
         spherePrinter(list)
       end
   
-
     def main do
         
         {radius, sum} = cond do
@@ -180,19 +169,16 @@ defmodule Main do
         prev = System.monotonic_time()
         image = CPUraytracer.kernelLoop(sphereList, [], 0, 0, width)
         next = System.monotonic_time()
-        IO.puts("tempo: #{next - prev}")
-        IO.inspect(image)
-
 
         widthInBytes = width * Bmpgen.bytes_per_pixel
 
         paddingSize = rem((4 - rem(widthInBytes, 4)), 4)
         stride = widthInBytes + paddingSize
 
-        IO.puts("ray tracer completo, mas sem escrita")
-        #Bmpgen.writeFileHeader(height, stride)
-        #Bmpgen.writeInfoHeader(height, width)
-        #Bmpgen.recursiveWrite(image)
+        IO.puts("ray tracer completo, começando escrita")
+        Bmpgen.writeFileHeader(height, stride)
+        Bmpgen.writeInfoHeader(height, width)
+        Bmpgen.recursiveWrite(image)
         
         {iteration, _} = Integer.parse(Enum.at(System.argv, 2))
         text = "time: #{System.convert_time_unit(next - prev,:native,:microsecond)}, iteration: #{iteration}, dimension: #{height}x#{width}, spheres: #{CPUraytracer.spheres} \n"
