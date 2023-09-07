@@ -5,7 +5,6 @@
 
 const int threadsPerBlock = 256;
 
-
 void generateLog(double time, int iteration, int n){
   printf("Writting operation time to file.\n");
   FILE *file;
