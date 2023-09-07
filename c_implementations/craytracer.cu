@@ -151,8 +151,6 @@ __global__ void kernel(int dim, Sphere * s,  unsigned char *ptr ) {
 }
 
 
-
-
 int main(int argc, char *argv[]){
     int dim = atoi(argv[1]);
     int sph = atoi(argv[2]);
@@ -275,6 +273,6 @@ int main(int argc, char *argv[]){
     generateLog(elapsed_time, dim, sph, iteration);
 
     free(image);
-    free( temp_s );
+    free(temp_s);
     free(final_bitmap);
 }
