@@ -178,3 +178,8 @@ time: 17248268, iteration: 27, dimension: 3072x3072, spheres: 20
 time: 17249618, iteration: 28, dimension: 3072x3072, spheres: 20 
 time: 17358916, iteration: 29, dimension: 3072x3072, spheres: 20 
 time: 17173029, iteration: 30, dimension: 3072x3072, spheres: 20 
+time: 131688, iteration: 1, dimension: 256x256, spheres: 20 
+time: 2416498, iteration: 1, dimension: 1024x1024, spheres: 20 
+time: 128145, iteration: 1, dimension: 256x256, spheres: 20 
+time: 2378212, iteration: 1, dimension: 1024x1024, spheres: 20 
+time: 23288217, iteration: 1, dimension: 3072x3072, spheres: 20 

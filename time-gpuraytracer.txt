@@ -178,3 +178,18 @@ time: 2283, iteration: 27, dimension: 3072x3072, spheres: 20
 time: 2668, iteration: 28, dimension: 3072x3072, spheres: 20 
 time: 2248, iteration: 29, dimension: 3072x3072, spheres: 20 
 time: 2545, iteration: 30, dimension: 3072x3072, spheres: 20 
+time: 79665, iteration: 1, dimension: 256x256, spheres: 20 
+time: 84702, iteration: 1, dimension: 1024x1024, spheres: 20 
+time: 46712, iteration: 1, dimension: 256x256, spheres: 20 
+time: 85341, iteration: 1, dimension: 1024x1024, spheres: 20 
+time: 319943, iteration: 1, dimension: 3072x3072, spheres: 20 
+time: 65744, iteration: 1, dimension: 256x256, spheres: 20 
+timeprekernel: 43362, 	 
+        time: 2499, 	 
+        timepostkernel: 1614}, dimension: 256x256, spheres: 20 
+timeprekernel: 46830, 	 
+        time: 3343, 	 
+        timepostkernel: 20255}, dimension: 1024x1024, spheres: 20 
+timeprekernel: 92417, 	 
+        time: 13429, 	 
+        timepostkernel: 183292}, dimension: 3072x3072, spheres: 20 

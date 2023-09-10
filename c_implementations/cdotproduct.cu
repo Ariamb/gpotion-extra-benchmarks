@@ -89,6 +89,8 @@ int main (int argc, char *argv[]) {
 	cudaFree(dev_partial_c);
     end_time = clock();
 
+	printf("\n FINAL RESULTADO: %f \n", c);
+
 	free(a);
 	free(b);
 	free(partial_c);

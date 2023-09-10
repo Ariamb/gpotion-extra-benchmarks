@@ -1,0 +1,12 @@
+timeprek: 65972.000000.0, 	 timek: 24.000000.0, 	 timepostk: 941.000000.0, 	 iteration: 1, 	 dimension: 256, 	 spheres 20
+timeprek: 46529.000000.0, 	 timek: 12.000000.0, 	 timepostk: 7241.000000.0, 	 iteration: 1, 	 dimension: 1024, 	 spheres 20
+timeprek: 45757.000000.0, 	 timek: 11.000000.0, 	 timepostk: 60981.000000.0, 	 iteration: 1, 	 dimension: 3072, 	 spheres 20
+timeprek: 63600.000000, 	 timek: 10.000000, 	 timepostk: 619.000000, 	 iteration: 1, 	 dimension: 256, 	 spheres 20
+timeprek: 49967.000000, 	 timek: 22.000000, 	 timepostk: 7040.000000, 	 iteration: 1, 	 dimension: 1024, 	 spheres 20
+timeprek: 52172.000000, 	 timek: 11.000000, 	 timepostk: 57678.000000, 	 iteration: 1, 	 dimension: 3072, 	 spheres 20
+timeprek: 66173.000000, 	 timek: 20.000000, 	 timepostk: 677.000000, 	 iteration: 1, 	 dimension: 256, 	 spheres 20
+timeprek: 43328.000000, 	 timek: 11.000000, 	 timepostk: 6928.000000, 	 iteration: 1, 	 dimension: 1024, 	 spheres 20
+timeprek: 53697.000000, 	 timek: 11.000000, 	 timepostk: 57019.000000, 	 iteration: 1, 	 dimension: 3072, 	 spheres 20
+timeprek: 74505.000000, 	 timek: 11.000000, 	 timepostk: 593.000000, 	 iteration: 1, 	 dimension: 256, 	 spheres 20
+timeprek: 52056.000000, 	 timek: 12.000000, 	 timepostk: 6856.000000, 	 iteration: 1, 	 dimension: 1024, 	 spheres 20
+timeprek: 41267.000000, 	 timek: 12.000000, 	 timepostk: 58188.000000, 	 iteration: 1, 	 dimension: 3072, 	 spheres 20

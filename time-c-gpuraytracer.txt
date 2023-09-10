@@ -178,3 +178,18 @@ time: 7700.000000.0, 	 iteration: 27, 	 dimension: 3072, 	 spheres 20
 time: 7681.000000.0, 	 iteration: 28, 	 dimension: 3072, 	 spheres 20
 time: 7681.000000.0, 	 iteration: 29, 	 dimension: 3072, 	 spheres 20
 time: 7680.000000.0, 	 iteration: 30, 	 dimension: 3072, 	 spheres 20
+time: 828.000000.0, 	 iteration: 1, 	 dimension: 256, 	 spheres 20
+time: 739.000000.0, 	 iteration: 1, 	 dimension: 1024, 	 spheres 20
+time: 837.000000.0, 	 iteration: 1, 	 dimension: 3072, 	 spheres 20
+time: 912.000000.0, 	 iteration: 1, 	 dimension: 256, 	 spheres 20
+time: 798.000000.0, 	 iteration: 1, 	 dimension: 1024, 	 spheres 20
+time: 919.000000.0, 	 iteration: 1, 	 dimension: 3072, 	 spheres 20
+time: 685.000000.0, 	 iteration: 1, 	 dimension: 256, 	 spheres 20
+time: 800.000000.0, 	 iteration: 1, 	 dimension: 1024, 	 spheres 20
+time: 806.000000.0, 	 iteration: 1, 	 dimension: 3072, 	 spheres 20
+time: 515.000000.0, 	 iteration: 1, 	 dimension: 256, 	 spheres 20
+time: 6705.000000.0, 	 iteration: 1, 	 dimension: 1024, 	 spheres 20
+time: 58456.000000.0, 	 iteration: 1, 	 dimension: 3072, 	 spheres 20
+timeprek: 65191.000000.0, 	 timek: 11.000000.0, 	 timepostk: 695.000000.0, 	 iteration: 1, 	 dimension: 256, 	 spheres 20
+timeprek: 55817.000000.0, 	 timek: 12.000000.0, 	 timepostk: 6761.000000.0, 	 iteration: 1, 	 dimension: 1024, 	 spheres 20
+timeprek: 51261.000000.0, 	 timek: 13.000000.0, 	 timepostk: 59663.000000.0, 	 iteration: 1, 	 dimension: 3072, 	 spheres 20

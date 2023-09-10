@@ -175,7 +175,7 @@ defmodule Main do
         paddingSize = rem((4 - rem(widthInBytes, 4)), 4)
         stride = widthInBytes + paddingSize
 
-        IO.puts("ray tracer completo, começando escrita")
+        IO.puts("ray tracer completo, iniciando escrita")
         Bmpgen.writeFileHeader(height, stride)
         Bmpgen.writeInfoHeader(height, width)
         Bmpgen.recursiveWrite(image)

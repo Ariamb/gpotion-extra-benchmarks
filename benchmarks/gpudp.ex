@@ -62,6 +62,7 @@ resultreal = GPotion.get_gmatrex(ref3)
 s = Matrex.sum(resultreal)
 next = System.monotonic_time()
 
+IO.inspect(s)
 
 text = "time: #{System.convert_time_unit(next - prev,:native,:microsecond)} \t iteration: #{iteration} \t array size: #{n} \n"
 File.write!("time-GPUDP.txt", text, [:append])

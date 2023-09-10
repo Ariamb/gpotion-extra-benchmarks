@@ -12,8 +12,8 @@ prev = System.monotonic_time()
 c = Matrex.dot_nt(a, b)
 next = System.monotonic_time()
 
-IO.puts("Cálculo finalizado. Resultado: #{c}")
-
+IO.puts("Cálculo finalizado. Resultado: ")
+IO.inspect(c)
 text = "time: #{System.convert_time_unit(next - prev,:native,:microsecond)} \t iteration: #{iteration} \t array size: #{n} \n"
 File.write!("time-matrex-cpudp.txt", text, [:append])
 

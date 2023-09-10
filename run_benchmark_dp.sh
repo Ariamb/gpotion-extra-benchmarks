@@ -1,12 +1,13 @@
 #!/bin/bash
 
-N=30
-
+N=1
+set $OPENBLAS_NUM_THREADS=1
+echo $OPENBLAS_NUM_THREADS
 # Compiling files
-#sh compile.sh
+sh compile.sh
 
 
-for SIZE in 5000000 50000000 100000000; do
+for SIZE in 5000000; do #50000000 100000000; do
     echo $SIZE
 
     for i in $(seq 1 $N); do
@@ -33,6 +34,7 @@ for SIZE in 5000000 50000000 100000000; do
 done
 
 
+unset $OPENBLAS_NUM_THREADS
 
 #mix run benchmarks/gpuraytracer.ex 256 20 1
 #mix run benchmarks/cpuraytracer.ex 256 20 1
