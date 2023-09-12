@@ -73,7 +73,7 @@ defmodule Bmpgen do
   def recursiveWrite([]) do
     IO.puts("done!")
   end
-  def recursiveWrite([0.0, 0.0, 0.0, 0.0 | rest]) do
+  def recursiveWrite([0.0, 0.0, 0.0, 0.0 | _rest]) do
     IO.puts("rest of the list is empty. Finalizing write.")
   end
 
@@ -182,40 +182,32 @@ defmodule Main do
 
         imageList = Matrex.zeros(1, (width + 1) * (height + 1) * 4)
 
+        prev = System.monotonic_time()
 
-        
-        prev_prekernel = System.monotonic_time()        
         refSphere = GPotion.new_gmatrex(sphereList)
         refImag = GPotion.new_gmatrex(imageList)
-        next_prekernel = System.monotonic_time()        
 
-        prev = System.monotonic_time()        
-        kernel = GPotion.load(&RayTracer.raytracing/3)
+        kernel = GPotion.load(&RayTracer.raytracing/4)
         GPotion.spawn(kernel,{trunc(width/16),trunc(height/16),1},{16,16,1},[width, height, refSphere, refImag])
         GPotion.synchronize()
+        
+        image = GPotion.get_gmatrex(refImag)
+
         next = System.monotonic_time()
 
-        prev_postkernel = System.monotonic_time()
-        image = GPotion.get_gmatrex(refImag)
-        next_postkernel = System.monotonic_time()
-        
-        IO.puts("Ray tracer completo, iniciado escrita de imagem")
         image = Matrex.to_list(image)
 
         widthInBytes = width * Bmpgen.bytes_per_pixel
         paddingSize = rem((4 - rem(widthInBytes, 4)), 4)
         stride = widthInBytes + paddingSize
 
-        #IO.puts("Ray tracer completo, iniciado escrita de imagem")
-        #Bmpgen.writeFileHeader(height, stride)
-        #Bmpgen.writeInfoHeader(height, width)
-        #Bmpgen.recursiveWrite(image)
+        IO.puts("Ray tracer completo, iniciado escrita de imagem")
+        Bmpgen.writeFileHeader(height, stride)
+        Bmpgen.writeInfoHeader(height, width)
+        Bmpgen.recursiveWrite(image)
 
         {iteration, _} = Integer.parse(Enum.at(System.argv, 2))
-        time_text = "timeprekernel: #{System.convert_time_unit(next_prekernel - prev_prekernel,:native,:microsecond)}, \t 
-        time: #{System.convert_time_unit(next - prev,:native,:microsecond)}, \t 
-        timepostkernel: #{System.convert_time_unit(next_postkernel - prev_postkernel,:native,:microsecond)}}"
-        text = "#{time_text}, dimension: #{height}x#{width}, spheres: #{Main.spheres} \n"
+        text = "time: #{System.convert_time_unit(next - prev,:native,:microsecond)}, dimension: #{height}x#{width}, spheres: #{Main.spheres}, iteration: #{iteration} \n"
 
         File.write!("time-gpuraytracer.txt", text, [:append])
       

@@ -193,3 +193,15 @@ timeprekernel: 46830,
 timeprekernel: 92417, 	 
         time: 13429, 	 
         timepostkernel: 183292}, dimension: 3072x3072, spheres: 20 
+timeprekernel: 85331, 	 
+        time: 5591, 	 
+        timepostkernel: 3526}, dimension: 256x256, spheres: 20 
+timeprekernel: 90208, 	 
+        time: 5393, 	 
+        timepostkernel: 59530}, dimension: 1024x1024, spheres: 20 
+timeprekernel: 146561, 	 
+        time: 15619, 	 
+        timepostkernel: 413405}, dimension: 3072x3072, spheres: 20 
+time: 92061, dimension: 256x256, spheres: 20, iteration: 1 
+time: 105718, dimension: 256x256, spheres: 20, iteration: 1 
+time: 141403, dimension: 1024x1024, spheres: 20, iteration: 1 

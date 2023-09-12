@@ -13,13 +13,13 @@ unsigned char* createBitmapFileHeader(int height, int stride);
 unsigned char* createBitmapInfoHeader(int height, int width);
 
 
-void generateLog(double time_prekernel, double time, double time_postkernel, int dim, int spheres, int iteration){
+void generateLog(double time, int dim, int spheres, int iteration){
   printf("Writting operation time to file.\n");
   FILE *file;
-  char filename[] = "time-c-gpuraytracer-3timers.txt";
+  char filename[] = "time-c-gpuraytracer.txt";
 
   file = fopen(filename, "a");
-  fprintf(file, "timeprek: %f, \t timek: %f, \t timepostk: %f, \t iteration: %d, \t dimension: %d, \t spheres %d\n", time_prekernel, time, time_postkernel, iteration, dim, spheres); 
+  fprintf(file, "time: %f, \t iteration: %d, \t dimension: %d, \t spheres %d\n", time, iteration, dim, spheres); 
   fclose(file);
   
   printf("done.\n");
@@ -231,10 +231,8 @@ int main(int argc, char *argv[]){
     }
 
     clock_t start_time, end_time;
-    clock_t start_time_prekernel, end_time_prekernel;
-    clock_t start_time_postkernel, end_time_postkernel;
 
-    start_time_prekernel = clock();
+    start_time = clock();
 
     cudaMalloc( (void**)&dev_bitmap, dim * dim * 4);
     cudaMalloc( (void**)&s, sizeof(Sphere) * 20 );
@@ -244,26 +242,19 @@ int main(int argc, char *argv[]){
     dim3    grids(dim/16,dim/16);
     dim3    threads(16,16);
 
-    end_time_prekernel = clock();
-
-    start_time = clock();
-
     kernel<<<grids,threads>>>(dim, s, dev_bitmap );
-    end_time = clock();
-    start_time_postkernel = clock();
+
     cudaMemcpy( final_bitmap, dev_bitmap, dim * dim * 4,cudaMemcpyDeviceToHost );
         
     cudaFree( dev_bitmap );
     cudaFree( s );
-    end_time_postkernel = clock();
+    end_time = clock();
 
     int height = dim;
     int width = dim;
     unsigned char* image = (unsigned char*) malloc(dim * dim *4); //[height][width][BYTES_PER_PIXEL];
 
     double elapsed_time = ((double)(end_time - start_time) * 1000000.0) / CLOCKS_PER_SEC;
-    double elapsed_time_prekernel = ((double)(end_time_prekernel- start_time_prekernel) * 1000000.0) / CLOCKS_PER_SEC;
-    double elapsed_time_postkernel = ((double)(end_time_postkernel - start_time_postkernel) * 1000000.0) / CLOCKS_PER_SEC;
 
     char imageFileName[50];
 
@@ -283,7 +274,7 @@ int main(int argc, char *argv[]){
     //generateBitmapImage((unsigned char*) image, height, width, imageFileName);
     //printf("Image generated!!");
 
-    generateLog(elapsed_time_prekernel, elapsed_time, elapsed_time_postkernel, dim, sph, iteration);
+    generateLog(elapsed_time, dim, sph, iteration);
 
     free(image);
     free(temp_s);

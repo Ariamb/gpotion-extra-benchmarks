@@ -193,3 +193,13 @@ time: 58456.000000.0, 	 iteration: 1, 	 dimension: 3072, 	 spheres 20
 timeprek: 65191.000000.0, 	 timek: 11.000000.0, 	 timepostk: 695.000000.0, 	 iteration: 1, 	 dimension: 256, 	 spheres 20
 timeprek: 55817.000000.0, 	 timek: 12.000000.0, 	 timepostk: 6761.000000.0, 	 iteration: 1, 	 dimension: 1024, 	 spheres 20
 timeprek: 51261.000000.0, 	 timek: 13.000000.0, 	 timepostk: 59663.000000.0, 	 iteration: 1, 	 dimension: 3072, 	 spheres 20
+time: 105828.000000, 	 iteration: 1, 	 dimension: 256, 	 spheres 20
+time: 109121.000000, 	 iteration: 1, 	 dimension: 1024, 	 spheres 20
+time: 201962.000000, 	 iteration: 1, 	 dimension: 3072, 	 spheres 20
+time: 105137.000000, 	 iteration: 1, 	 dimension: 256, 	 spheres 20
+time: 103137.000000, 	 iteration: 1, 	 dimension: 1024, 	 spheres 20
+time: 103849.000000, 	 iteration: 1, 	 dimension: 256, 	 spheres 20
+time: 120024.000000, 	 iteration: 1, 	 dimension: 1024, 	 spheres 20
+time: 99083.000000, 	 iteration: 1, 	 dimension: 256, 	 spheres 20
+time: 108875.000000, 	 iteration: 1, 	 dimension: 1024, 	 spheres 20
+time: 480565.000000, 	 iteration: 1, 	 dimension: 3072, 	 spheres 20
